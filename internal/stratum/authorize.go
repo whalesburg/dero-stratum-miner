@@ -24,12 +24,12 @@ func (c *Client) Authorize() error {
 	}
 	c.connected = true
 
-	sid, ok := response.Result["id"]
+	sid, ok := response.Result.(map[string]any)["id"]
 	if !ok {
 		return ErrNoSessionID
 	}
 	c.sessionID = sid.(string)
-	job, err := extractJob(response.Result["job"].(map[string]any))
+	job, err := extractJob(response.Result.(map[string]any)["job"].(map[string]any))
 	if err != nil {
 		return err
 	}

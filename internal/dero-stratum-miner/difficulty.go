@@ -14,7 +14,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package main
+package miner
 
 // ripoff from blockchain folder
 import (
@@ -66,7 +66,6 @@ func ConvertDifficultyToBig(difficultyi uint64) *big.Int {
 }
 
 func ConvertIntegerDifficultyToBig(difficultyi *big.Int) *big.Int {
-
 	if difficultyi.Cmp(bigZero) == 0 { // if work_pow is less than difficulty
 		panic("difficulty can never be zero")
 	}

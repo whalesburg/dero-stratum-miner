@@ -14,65 +14,29 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package main
+package miner
 
-import "runtime"
-import "sync/atomic"
-import "syscall"
-import "unsafe"
-import "math/bits"
+import (
+	"runtime"
+	"sync/atomic"
 
-var libkernel32 uintptr
-var setThreadAffinityMask uintptr
-
-func doLoadLibrary(name string) uintptr {
-	lib, _ := syscall.LoadLibrary(name)
-	return uintptr(lib)
-}
-
-func doGetProcAddress(lib uintptr, name string) uintptr {
-	addr, _ := syscall.GetProcAddress(syscall.Handle(lib), name)
-	return uintptr(addr)
-}
-
-func syscall3(trap, nargs, a1, a2, a3 uintptr) uintptr {
-	ret, _, _ := syscall.Syscall(trap, nargs, a1, a2, a3)
-	return ret
-}
-
-func init() {
-	libkernel32 = doLoadLibrary("kernel32.dll")
-	setThreadAffinityMask = doGetProcAddress(libkernel32, "SetThreadAffinityMask")
-}
+	"golang.org/x/sys/unix"
+)
 
 var processor int32
 
-// currently we suppport upto 64 cores
-func SetThreadAffinityMask(hThread syscall.Handle, dwThreadAffinityMask uint) *uint32 {
-	ret1 := syscall3(setThreadAffinityMask, 2,
-		uintptr(hThread),
-		uintptr(dwThreadAffinityMask),
-		0)
-	return (*uint32)(unsafe.Pointer(ret1))
-}
-
-// CurrentThread returns the handle for the current thread.
-// It is a pseudo handle that does not need to be closed.
-func CurrentThread() syscall.Handle { return syscall.Handle(^uintptr(2 - 1)) }
-
 // sets thread affinity to avoid cache collision and thread migration
 func threadaffinity() {
+	var cpuset unix.CPUSet
+
 	lock_on_cpu := atomic.AddInt32(&processor, 1)
 	if lock_on_cpu >= int32(runtime.GOMAXPROCS(0)) { // threads are more than cpu, we do not know what to do
 		return
 	}
+	cpuset.Zero()
+	cpuset.Set(int(avoidHT(int(lock_on_cpu))))
 
-	if lock_on_cpu >= bits.UintSize {
-		return
-	}
-	var cpuset uint
-	cpuset = 1 << uint(avoidHT(int(lock_on_cpu)))
-	SetThreadAffinityMask(CurrentThread(), cpuset)
+	unix.SchedSetaffinity(0, &cpuset)
 }
 
 func avoidHT(i int) int {
