@@ -22,6 +22,8 @@ import (
 	"github.com/teivah/broadcast"
 )
 
+var reportHashrateInterval = time.Second * 30
+
 type Config struct {
 	Wallet  string
 	Testnet bool
@@ -90,6 +92,8 @@ func (c *Client) Start() error {
 		go c.mineblock(i)
 	}
 
+	go c.reportHashrate()
+
 	// this method will block until the context is canceled
 	c.startConsole()
 	return nil
@@ -122,7 +126,6 @@ func (c *Client) getwork() {
 			c.job = j
 			c.jobCounter++
 			c.mu.Unlock()
-			c.rejectedCounter = uint64(c.stratum.GetTotalShares() - c.stratum.GetAcceptedShares())
 		}
 	}
 }
@@ -208,4 +211,20 @@ func (c *Client) recover(level int) (err error) {
 		c.logger.V(level).Error(nil, "Recovered ", "error", r, "stack", fmt.Sprintf("%s", string(debug.Stack())))
 	}
 	return
+}
+
+func (c *Client) reportHashrate() {
+	ticker := time.NewTicker(reportHashrateInterval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			if err := c.stratum.ReportHashrate(stratum.NewReport(c.hashrate)); err != nil {
+				c.logger.Error(err, "Failed to report hashrate")
+			}
+		case <-c.ctx.Done():
+			return
+		}
+	}
 }

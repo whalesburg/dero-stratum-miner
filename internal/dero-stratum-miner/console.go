@@ -134,6 +134,7 @@ func (c *Client) refreshConsole() {
 
 			if mining {
 				mining_speed := float64(c.counter-last_counter) / (float64(uint64(time.Since(last_counter_time))) / 1000000000.0)
+				c.hashrate = uint64(mining_speed)
 				last_counter = c.counter
 				last_counter_time = time.Now()
 				switch {
@@ -146,26 +147,12 @@ func (c *Client) refreshConsole() {
 				}
 			}
 
-			hash_rate_string := ""
-			switch {
-			case c.hashrate > 1000000000000:
-				hash_rate_string = fmt.Sprintf("%.3f TH/s", float64(c.hashrate)/1000000000000.0)
-			case c.hashrate > 1000000000:
-				hash_rate_string = fmt.Sprintf("%.3f GH/s", float64(c.hashrate)/1000000000.0)
-			case c.hashrate > 1000000:
-				hash_rate_string = fmt.Sprintf("%.3f MH/s", float64(c.hashrate)/1000000.0)
-			case c.hashrate > 1000:
-				hash_rate_string = fmt.Sprintf("%.3f KH/s", float64(c.hashrate)/1000.0)
-			case c.hashrate > 0:
-				hash_rate_string = fmt.Sprintf("%d H/s", c.hashrate)
-			}
-
 			testnet_string := ""
 			if c.config.Testnet {
 				testnet_string = "\033[31m TESTNET"
 			}
 
-			c.console.SetPrompt(fmt.Sprintf("\033[1m\033[32mDERO Miner: \033[0m"+color+"Shares %d Rejected %d \033[32mNW %s %s>%s>>\033[0m ", c.shareCounter, c.rejectedCounter, hash_rate_string, mining_string, testnet_string))
+			c.console.SetPrompt(fmt.Sprintf("\033[1m\033[32mDERO Miner: \033[0m"+color+"Shares %d Rejected %d \033[32m %s>%s>>\033[0m ", c.shareCounter, c.rejectedCounter, mining_string, testnet_string))
 			c.console.Refresh()
 		}
 		time.Sleep(1 * time.Second)
