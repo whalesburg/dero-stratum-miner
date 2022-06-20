@@ -65,14 +65,14 @@ func newLogger(console, logfile io.Writer, debug bool, clogLevel, flogLevel int8
 	zc.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	zc.EncodeTime = zapcore.TimeEncoderOfLayout("02/01 15:04:05")
 
-	file_encoder := zapcore.NewJSONEncoder(zf)
-	console_encoder := zapcore.NewConsoleEncoder(zc)
+	fileEncoder := zapcore.NewJSONEncoder(zf)
+	consoleEncoder := zapcore.NewConsoleEncoder(zc)
 
-	core_console := zapcore.NewCore(console_encoder, zapcore.AddSync(console), logLevelConsole)
-	removecore := &removeCallerCore{core_console}
+	coreConsole := zapcore.NewCore(consoleEncoder, zapcore.AddSync(console), logLevelConsole)
+	removecore := &removeCallerCore{coreConsole}
 	core := zapcore.NewTee(
 		removecore,
-		zapcore.NewCore(file_encoder, zapcore.AddSync(logfile), logLevelFile),
+		zapcore.NewCore(fileEncoder, zapcore.AddSync(logfile), logLevelFile),
 	)
 
 	zcore := zap.New(core, zap.AddCaller()) // add caller info to every record which is then trimmed from console
