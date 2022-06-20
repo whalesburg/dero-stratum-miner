@@ -5,10 +5,8 @@ go 1.18
 require (
 	github.com/chzyer/readline v1.5.0
 	github.com/deroproject/derohe v0.0.0-20220610090545-ec5da1c381a9
-	github.com/docopt/docopt-go v0.0.0-20180111231733-ee0de3bc6815
 	github.com/go-logr/logr v1.2.3
 	github.com/go-logr/zapr v1.2.3
-	github.com/gorilla/websocket v1.5.0
 	github.com/muesli/coral v1.0.0
 	github.com/stratumfarm/derohe v0.0.0-20220610114855-d6de66e1986c
 	github.com/stretchr/testify v1.7.2
