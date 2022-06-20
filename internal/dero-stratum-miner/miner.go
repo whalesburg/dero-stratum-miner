@@ -1,0 +1,211 @@
+package miner
+
+import (
+	"context"
+	"crypto/rand"
+	"encoding/binary"
+	"encoding/hex"
+	"fmt"
+	"math/big"
+	"runtime"
+	"runtime/debug"
+	"strconv"
+	"sync"
+	"sync/atomic"
+	"time"
+
+	"github.com/chzyer/readline"
+	"github.com/go-logr/logr"
+	"github.com/stratumfarm/dero-stratum-miner/internal/stratum"
+	"github.com/stratumfarm/derohe/astrobwt/astrobwtv3"
+	"github.com/stratumfarm/derohe/block"
+	"github.com/teivah/broadcast"
+)
+
+type Config struct {
+	Wallet  string
+	Testnet bool
+	PoolURL string
+	Threads int
+
+	Debug     bool
+	CLogLevel int8
+	FLogLevel int8
+}
+
+type Client struct {
+	ctx     context.Context
+	cancel  context.CancelFunc
+	config  *Config
+	stratum *stratum.Client
+	console *readline.Instance
+	logger  logr.Logger
+
+	mu         sync.RWMutex
+	job        *stratum.Job
+	jobCounter int64
+	iterations int
+	counter    uint64
+	hashrate   uint64
+	difficulty uint64
+
+	shareCounter    uint64
+	rejectedCounter uint64
+}
+
+func New(ctx context.Context, cancel context.CancelFunc, stratum *stratum.Client, config *Config) (*Client, error) {
+	c := &Client{
+		ctx:        ctx,
+		cancel:     cancel,
+		config:     config,
+		stratum:    stratum,
+		iterations: 100,
+	}
+	if err := c.newConsole(); err != nil {
+		return nil, err
+	}
+	if err := c.setLogger(); err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (c *Client) Close() error {
+	return c.console.Close()
+}
+
+func (c *Client) Start() error {
+	if c.config.Threads < 1 || c.iterations < 1 || c.config.Threads > 2048 {
+		panic("Invalid parameters\n")
+	}
+	if c.config.Threads > 255 {
+		c.logger.Error(nil, "This program supports maximum 256 CPU cores.", "available", c.config.Threads)
+		c.config.Threads = 255
+	}
+
+	go c.refreshConsole()
+	go c.getwork()
+
+	for i := 0; i < c.config.Threads; i++ {
+		go c.mineblock(i)
+	}
+
+	// this method will block until the context is canceled
+	c.startConsole()
+	return nil
+}
+
+func (c *Client) getwork() {
+	for {
+		if err := c.stratum.Connect(); err != nil {
+			c.logger.Error(err, "Error connecting to server", "server adress", c.config.PoolURL)
+			c.logger.Info("Will try in 10 secs", "server adress", c.config.PoolURL)
+			time.Sleep(10 * time.Second)
+			continue
+		}
+
+		jobListener := c.stratum.NewJobListener(1)
+		defer jobListener.Close()
+
+		respListener := c.stratum.NewResponseListener(3)
+		go c.listenStratumResponses(respListener)
+
+		if err := c.stratum.Authorize(); err != nil {
+			c.logger.Error(err, "Error authorizing client", "server adress", c.config.PoolURL)
+			c.logger.Info("Will try in 10 secs", "server adress", c.config.PoolURL)
+			time.Sleep(10 * time.Second)
+			continue
+		}
+
+		for j := range jobListener.Ch() {
+			c.mu.Lock()
+			c.job = j
+			c.jobCounter++
+			c.mu.Unlock()
+			c.rejectedCounter = uint64(c.stratum.GetTotalShares() - c.stratum.GetAcceptedShares())
+		}
+	}
+}
+
+func (c *Client) listenStratumResponses(l *broadcast.Listener[*stratum.Response]) {
+	defer l.Close()
+	for range l.Ch() {
+		c.shareCounter = uint64(c.stratum.GetTotalShares())
+		c.rejectedCounter = uint64(c.stratum.GetTotalShares() - c.stratum.GetAcceptedShares())
+	}
+}
+
+func (c *Client) mineblock(tid int) {
+	var diff big.Int
+	var work [block.MINIBLOCK_SIZE]byte
+
+	var randomBuf [12]byte
+
+	rand.Read(randomBuf[:])
+
+	time.Sleep(3 * time.Second)
+
+	nonceBuf := work[block.MINIBLOCK_SIZE-5:] //since slices are linked, it modifies parent
+	runtime.LockOSThread()
+	threadaffinity()
+
+	var localJobCounter int64
+
+	i := uint32(0)
+
+	for {
+		c.mu.RLock()
+		myjob := c.job
+		if myjob == nil {
+			time.Sleep(time.Second)
+			continue
+		}
+		localJobCounter = c.jobCounter
+		c.mu.RUnlock()
+
+		n, err := hex.Decode(work[:], []byte(myjob.Blob))
+		if err != nil || n != block.MINIBLOCK_SIZE {
+			c.logger.Error(err, "Blockwork could not be decoded successfully", "blockwork", myjob.Blob, "n", n, "job", myjob)
+			time.Sleep(time.Second)
+			continue
+		}
+
+		copy(work[block.MINIBLOCK_SIZE-12:], randomBuf[:]) // add more randomization in the mix
+		work[block.MINIBLOCK_SIZE-1] = byte(tid)
+		diff.SetString(strconv.Itoa(int(myjob.Difficulty)), 10)
+
+		if work[0]&0xf != 1 { // check  version
+			c.logger.Error(nil, "Unknown version, please check for updates", "version", work[0]&0x1f)
+			time.Sleep(time.Second)
+			continue
+		}
+
+		for localJobCounter == c.jobCounter { // update job when it comes, expected rate 1 per second
+			i++
+			binary.BigEndian.PutUint32(nonceBuf, i)
+
+			powhash := astrobwtv3.AstroBWTv3(work[:])
+			atomic.AddUint64(&c.counter, 1)
+
+			if CheckPowHashBig(powhash, &diff) { // note we are doing a local, NW might have moved meanwhile
+				c.logger.V(1).Info("Successfully found share (going to submit)", "difficulty", myjob.Difficulty, "height", myjob.Height)
+				func() {
+					defer c.recover(1)
+					nonce := work[len(work)-12:]
+					share := stratum.NewShare(myjob.ID, fmt.Sprintf("%x", nonce), fmt.Sprintf("%x", powhash[:]))
+					if err := c.stratum.SubmitShare(share); err != nil {
+						c.logger.Error(err, "Failed to submit share")
+					}
+				}()
+			}
+		}
+	}
+}
+
+func (c *Client) recover(level int) (err error) {
+	if r := recover(); r != nil {
+		err = fmt.Errorf("Recovered r:%+v stack %s", r, fmt.Sprintf("%s", string(debug.Stack())))
+		c.logger.V(level).Error(nil, "Recovered ", "error", r, "stack", fmt.Sprintf("%s", string(debug.Stack())))
+	}
+	return
+}

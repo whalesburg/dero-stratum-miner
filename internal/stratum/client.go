@@ -149,6 +149,7 @@ func (c *Client) handleMessages() {
 			//TODO: debug logger
 			break
 		}
+
 		//TODO: debug logger
 		var msg map[string]interface{}
 		if err = json.Unmarshal(line, &msg); err != nil {
@@ -162,6 +163,7 @@ func (c *Client) handleMessages() {
 			// This is a response
 			response, err := parseResponse(line)
 			if err != nil {
+				fmt.Println(err)
 				//TODO: debug logger
 				continue
 			}
@@ -169,6 +171,8 @@ func (c *Client) handleMessages() {
 			if response.Result == nil {
 				// This is an error
 				isError = true
+			} else {
+				isError = response.Error != nil
 			}
 			id := int(response.ID.(float64))
 
@@ -186,7 +190,7 @@ func (c *Client) handleMessages() {
 					//TODO: debug logger
 				}
 			} else {
-				statusIntf, ok := response.Result["status"]
+				statusIntf, ok := response.Result.(map[string]any)["status"]
 				if !ok {
 					//TODO: debug logger
 				} else {
