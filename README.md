@@ -6,7 +6,7 @@ go run . --wallet-address=$YOUR_WALLET --daemon-rpc-address=$POOL:$PORT --testne
 
 # TODO
 - [ ] auto reconnects
-- [ ] reported hashrate
+- [x] reported hashrate
 - [x] tls support
 - [x] worker names?
 - [ ] testing, testing, testing
