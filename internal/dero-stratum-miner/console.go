@@ -152,7 +152,7 @@ func (c *Client) refreshConsole() {
 				testnet_string = "\033[31m TESTNET"
 			}
 
-			c.console.SetPrompt(fmt.Sprintf("\033[1m\033[32mDERO Miner: \033[0m"+color+"Shares %d Rejected %d \033[32m %s>%s>>\033[0m ", c.shareCounter, c.rejectedCounter, mining_string, testnet_string))
+			c.console.SetPrompt(fmt.Sprintf("\033[1m\033[32mDERO Miner: \033[0m"+color+"Shares %d Rejected %d \033[32m%s>%s>>\033[0m ", c.shareCounter, c.rejectedCounter, mining_string, testnet_string))
 			c.console.Refresh()
 		}
 		time.Sleep(1 * time.Second)
