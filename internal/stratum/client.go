@@ -190,11 +190,11 @@ func (c *Client) handleMessages() {
 					//TODO: debug logger
 				}
 			} else {
-				statusIntf, ok := response.Result.(map[string]any)["status"]
+				statusIntf, ok := response.Result.(map[string]any)
 				if !ok {
 					//TODO: debug logger
 				} else {
-					status := statusIntf.(string)
+					status := statusIntf["status"].(string)
 					switch status {
 					case "OK":
 						//TODO: debug logger
