@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
@@ -14,42 +13,6 @@ import (
 	"github.com/stratumfarm/dero-stratum-miner/internal/version"
 )
 
-func (c *Client) newConsole() error {
-	l, err := readline.NewEx(&readline.Config{
-		Prompt:          "\033[92mDERO Miner:\033[32m>>>\033[0m ",
-		HistoryFile:     filepath.Join(os.TempDir(), "dero_miner_readline.tmp"),
-		AutoComplete:    completer,
-		InterruptPrompt: "^C",
-		EOFPrompt:       "exit",
-
-		HistorySearchFold:   true,
-		FuncFilterInputRune: filterInput,
-	})
-	if err != nil {
-		return err
-	}
-	c.console = l
-	return nil
-}
-
-var completer = readline.NewPrefixCompleter(
-	readline.PcItem("help"),
-	readline.PcItem("status"),
-	readline.PcItem("version"),
-	readline.PcItem("bye"),
-	readline.PcItem("exit"),
-	readline.PcItem("quit"),
-)
-
-func filterInput(r rune) (rune, bool) {
-	switch r {
-	// block CtrlZ feature
-	case readline.CharCtrlZ:
-		return r, false
-	}
-	return r, true
-}
-
 func usage(w io.Writer) {
 	io.WriteString(w, "commands:\n")
 	io.WriteString(w, "\t\033[1mhelp\033[0m\t\tthis help\n")
@@ -58,7 +21,6 @@ func usage(w io.Writer) {
 	io.WriteString(w, "\t\033[1mversion\033[0m\t\tShow version\n")
 	io.WriteString(w, "\t\033[1mexit\033[0m\t\tQuit the miner\n")
 	io.WriteString(w, "\t\033[1mquit\033[0m\t\tQuit the miner\n")
-
 }
 
 func (c *Client) startConsole() {

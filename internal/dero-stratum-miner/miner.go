@@ -55,18 +55,16 @@ type Client struct {
 	rejectedCounter uint64
 }
 
-func New(ctx context.Context, cancel context.CancelFunc, stratum *stratum.Client, config *Config) (*Client, error) {
+func New(ctx context.Context, cancel context.CancelFunc, config *Config, stratum *stratum.Client, console *readline.Instance, logger logr.Logger) (*Client, error) {
 	c := &Client{
 		ctx:        ctx,
 		cancel:     cancel,
 		config:     config,
 		stratum:    stratum,
 		iterations: 100,
+		console:    console,
 	}
-	if err := c.newConsole(); err != nil {
-		return nil, err
-	}
-	if err := c.setLogger(); err != nil {
+	if err := c.setLogger(logger); err != nil {
 		return nil, err
 	}
 	return c, nil
@@ -146,7 +144,7 @@ func (c *Client) mineblock(tid int) {
 
 	rand.Read(randomBuf[:])
 
-	time.Sleep(3 * time.Second)
+	time.Sleep(2 * time.Second)
 
 	nonceBuf := work[block.MINIBLOCK_SIZE-5:] //since slices are linked, it modifies parent
 	runtime.LockOSThread()
