@@ -21,7 +21,7 @@ func NewShare(jobID string, nonce string, result string) *Share {
 }
 
 func (c *Client) SubmitShare(s *Share) error {
-	if s.Result == c.lastSubmittedShare.Result { // should we do this?
+	if s.JobID == c.lastSubmittedShare.JobID {
 		// TODO: debug logger
 		return nil
 	}

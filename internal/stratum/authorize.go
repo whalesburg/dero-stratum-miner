@@ -1,10 +1,6 @@
 package stratum
 
-import (
-	"encoding/json"
-)
-
-func (c *Client) Authorize() error {
+func (c *Client) authorize() error {
 	args := map[string]any{
 		"login": c.username,
 		"pass":  c.password,
@@ -24,19 +20,20 @@ func (c *Client) Authorize() error {
 	}
 	c.connected = true
 
-	sid, ok := response.Result.(map[string]any)["id"]
+	sid, ok := response.Result.(map[string]any)
 	if !ok {
 		return ErrNoSessionID
 	}
-	c.sessionID = sid.(string)
+	c.sessionID, ok = sid["id"].(string)
+	if !ok {
+		return ErrNoSessionID
+	}
 	job, err := extractJob(response.Result.(map[string]any)["job"].(map[string]any))
 	if err != nil {
 		return err
 	}
 	c.broadcastJob(job)
 
-	// Handle messages
-	go c.handleMessages()
 	return nil
 }
 
@@ -46,21 +43,4 @@ func (c *Client) readResponse() (*Response, error) {
 		return nil, err
 	}
 	return parseResponse(line)
-}
-
-func (c *Client) readLine() ([]byte, error) {
-	line, err := c.reader.ReadBytes('\n')
-	if err != nil {
-		return nil, err
-	}
-	//fmt.Println("Received:", string(line))
-	return line, nil
-}
-
-func parseResponse(b []byte) (*Response, error) {
-	var response Response
-	if err := json.Unmarshal(b, &response); err != nil {
-		return nil, err
-	}
-	return &response, nil
 }

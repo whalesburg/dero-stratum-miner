@@ -7,6 +7,7 @@ require (
 	github.com/deroproject/derohe v0.0.0-20220610090545-ec5da1c381a9
 	github.com/go-logr/logr v1.2.3
 	github.com/go-logr/zapr v1.2.3
+	github.com/jpillora/backoff v1.0.0
 	github.com/muesli/coral v1.0.0
 	github.com/stratumfarm/derohe v0.0.0-20220610114855-d6de66e1986c
 	github.com/stretchr/testify v1.7.2
