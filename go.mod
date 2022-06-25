@@ -9,6 +9,8 @@ require (
 	github.com/go-logr/zapr v1.2.3
 	github.com/jpillora/backoff v1.0.0
 	github.com/muesli/coral v1.0.0
+	github.com/muesli/mango-coral v1.0.1
+	github.com/muesli/roff v0.1.0
 	github.com/stratumfarm/derohe v0.0.0-20220610114855-d6de66e1986c
 	github.com/stretchr/testify v1.7.2
 	github.com/teivah/broadcast v0.1.0
@@ -27,6 +29,8 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.0.4 // indirect
 	github.com/minio/sha256-simd v1.0.0 // indirect
+	github.com/muesli/mango v0.1.0 // indirect
+	github.com/muesli/mango-pflag v0.1.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect

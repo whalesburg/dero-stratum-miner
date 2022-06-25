@@ -14,10 +14,13 @@ import (
 	"github.com/deroproject/derohe/rpc"
 	"github.com/go-logr/logr"
 	"github.com/muesli/coral"
+	mcoral "github.com/muesli/mango-coral"
+	"github.com/muesli/roff"
 	"github.com/stratumfarm/dero-stratum-miner/internal/console"
 	miner "github.com/stratumfarm/dero-stratum-miner/internal/dero-stratum-miner"
 	"github.com/stratumfarm/dero-stratum-miner/internal/logging"
 	"github.com/stratumfarm/dero-stratum-miner/internal/stratum"
+	"github.com/stratumfarm/dero-stratum-miner/internal/version"
 )
 
 var cfg = &miner.Config{}
@@ -29,6 +32,8 @@ var rootCmd = &coral.Command{
 }
 
 func init() {
+	rootCmd.AddCommand(versionCmd, manCmd)
+
 	rootCmd.Flags().StringVarP(&cfg.Wallet, "wallet-address", "w", "", "wallet of the miner. Rewards will be sent to this address")
 	rootCmd.MarkFlagRequired("wallet-address")
 
@@ -39,7 +44,6 @@ func init() {
 	rootCmd.Flags().BoolVar(&cfg.Debug, "debug", false, "enable debug mode")
 	rootCmd.Flags().Int8Var(&cfg.CLogLevel, "console-log-level", 0, "console log level")
 	rootCmd.Flags().Int8Var(&cfg.FLogLevel, "file-log-level", 0, "file log level")
-
 }
 
 func Execute() error {
@@ -70,9 +74,8 @@ func validateAddress(testnet bool, a string) error {
 	if !testnet != addr.IsMainnet() {
 		if !testnet {
 			return fmt.Errorf("Address belongs to DERO testnet and is invalid on current network")
-		} else {
-			return fmt.Errorf("Address belongs to DERO mainnet and is invalid on current network")
 		}
+		return fmt.Errorf("Address belongs to DERO mainnet and is invalid on current network")
 	}
 	return nil
 }
@@ -96,7 +99,7 @@ func rootHandler(cmd *coral.Command, args []string) error {
 	}
 	f, err := os.Create(exename + ".log")
 	if err != nil {
-		return fmt.Errorf("Error while opening log file err: %s filename %s\n", err, exename+".log")
+		return fmt.Errorf("Error while opening log file err: %s filename %s", err, exename+".log")
 	}
 	logger := logging.New(cli.Stdout(), f, cfg.Debug, cfg.CLogLevel, cfg.FLogLevel)
 
@@ -152,4 +155,33 @@ func newStratumClient(ctx context.Context, url, addr string, logger logr.Logger)
 	}
 
 	return stratum.New(url, opts...)
+}
+
+var manCmd = &coral.Command{
+	Use:                   "man",
+	Short:                 "generates the manpages",
+	SilenceUsage:          true,
+	DisableFlagsInUseLine: true,
+	Hidden:                true,
+	Args:                  coral.NoArgs,
+	RunE: func(cmd *coral.Command, args []string) error {
+		manPage, err := mcoral.NewManPage(1, rootCmd)
+		if err != nil {
+			return err
+		}
+
+		_, err = fmt.Fprint(os.Stdout, manPage.Build(roff.NewDocument()))
+		return err
+	},
+}
+
+var versionCmd = &coral.Command{
+	Use:   "version",
+	Short: "Print the version info",
+	Run: func(cmd *coral.Command, args []string) {
+		fmt.Printf("Version: %s\n", version.Version)
+		fmt.Printf("Commit: %s\n", version.Commit)
+		fmt.Printf("Date: %s\n", version.Date)
+		fmt.Printf("Build by: %s\n", version.BuiltBy)
+	},
 }

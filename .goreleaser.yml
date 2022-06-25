@@ -1,0 +1,104 @@
+---
+
+before:
+  hooks:
+    - ./scripts/completions.sh
+    - ./scripts/manpages.sh
+
+builds:
+  - 
+    id: default
+    env:
+      - CGO_ENABLED=0
+    main: ./main.go
+    binary: dero-stratum-miner
+    ldflags: -s -w -X github.com/stratumfarm/dero-stratum-miner/internal/version.Version={{ .Version }} -X github.com/stratumfarm/dero-stratum-miner/internal/version.Commit={{ .Commit }} -X github.com/stratumfarm/dero-stratum-miner/internal/version.Date={{ .Date }} -X github.com/stratumfarm/dero-stratum-miner/internal/version.BuiltBy=goreleaser
+    flags:
+      - -trimpath
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+      - "386"
+      - arm
+    goarm:
+      - "7"
+    ignore:
+      - goos: windows
+        goarch: arm64
+      - goos: windows
+        goarm: "7"
+  - 
+    id: bsd
+    env:
+      - CGO_ENABLED=0
+    main: ./main.go
+    binary: dero-stratum-miner
+    ldflags: -s -w -X github.com/stratumfarm/dero-stratum-miner/internal/version.Version={{ .Version }} -X github.com/stratumfarm/dero-stratum-miner/internal/version.Commit={{ .Commit }} -X github.com/stratumfarm/dero-stratum-miner/internal/version.Date={{ .Date }} -X github.com/stratumfarm/dero-stratum-miner/internal/version.BuiltBy=goreleas
+    flags: 
+      - -trimpath
+    goos:
+      - freebsd
+    goarch:
+      - amd64
+      - "386"
+
+archives:
+  - 
+    name_template: "dero-stratum-miner-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}-{{ .Mips }}{{ end }}"
+    builds:
+      - default
+      - bsd
+    format_overrides:
+      - goos: windows
+        format: zip
+    replacements:
+      darwin: macOS
+    files:
+      - LICENSE*
+      - README*
+      - CHANGELOG*
+      - manpages/
+      - completions
+
+checksum:
+  name_template: checksums.txt
+
+nfpms:
+  - 
+    file_name_template: "dero-stratum-miner-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}-{{ .Mips }}{{ end }}"
+    vendor: stratumfarm
+    homepage: https://stratum.farm
+    maintainer: stratumfarm <pool@stratum.farm>
+    description: a cli tool to fetch information from a dero rpc node
+    license: MIT
+    formats:
+      - apk
+      - deb
+      - rpm
+
+source:
+  enabled: true
+
+snapshot:
+  name_template: "{{ incpatch .Version }}-devel"
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+  groups:
+    - title: New Features
+      regexp: "^.*feat[(\\w)]*:+.*$"
+      order: 0
+    - title: 'Bug fixes'
+      regexp: "^.*fix[(\\w)]*:+.*$"
+      order: 10
+    - title: Others
+      order: 999
