@@ -35,7 +35,7 @@ func Get() (*Limits, error) {
 	if err := unix.Getrlimit(unix.RLIMIT_NOFILE, &rLimit); err != nil {
 		return nil, err
 	}
-	return &Limits{Current: rLimit.Cur, Max: rLimit.Max}, nil
+	return &Limits{Current: uint64(rLimit.Cur), Max: uint64(rLimit.Max)}, nil //nolint: unconvert, otherwise bsd builds fail
 }
 
 /*
