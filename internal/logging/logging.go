@@ -13,6 +13,7 @@ func New(console, logfile io.Writer, debug bool, clogLevel, flogLevel int8) logr
 	var logLevelConsole zap.AtomicLevel
 	if debug { // setup debug mode if requested
 		clogLevel = 1
+		flogLevel = 1
 	}
 
 	if clogLevel < 0 {
