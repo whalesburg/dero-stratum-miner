@@ -14,13 +14,13 @@ import (
 )
 
 func usage(w io.Writer) {
-	io.WriteString(w, "commands:\n")
-	io.WriteString(w, "\t\033[1mhelp\033[0m\t\tthis help\n")
-	io.WriteString(w, "\t\033[1mstatus\033[0m\t\tShow general information\n")
-	io.WriteString(w, "\t\033[1mbye\033[0m\t\tQuit the miner\n")
-	io.WriteString(w, "\t\033[1mversion\033[0m\t\tShow version\n")
-	io.WriteString(w, "\t\033[1mexit\033[0m\t\tQuit the miner\n")
-	io.WriteString(w, "\t\033[1mquit\033[0m\t\tQuit the miner\n")
+	io.WriteString(w, "commands:\n")                                          // nolint: errcheck
+	io.WriteString(w, "\t\033[1mhelp\033[0m\t\tthis help\n")                  // nolint: errcheck
+	io.WriteString(w, "\t\033[1mstatus\033[0m\t\tShow general information\n") // nolint: errcheck
+	io.WriteString(w, "\t\033[1mbye\033[0m\t\tQuit the miner\n")              // nolint: errcheck
+	io.WriteString(w, "\t\033[1mversion\033[0m\t\tShow version\n")            // nolint: errcheck
+	io.WriteString(w, "\t\033[1mexit\033[0m\t\tQuit the miner\n")             // nolint: errcheck
+	io.WriteString(w, "\t\033[1mquit\033[0m\t\tQuit the miner\n")             // nolint: errcheck
 }
 
 func (c *Client) startConsole() {
@@ -76,8 +76,8 @@ func (c *Client) startConsole() {
 }
 
 func (c *Client) refreshConsole() {
-	last_counter := uint64(0)
-	last_counter_time := time.Now()
+	lastCounter := uint64(0)
+	lastCounterTime := time.Now()
 
 	mining := true
 	for {
@@ -88,33 +88,33 @@ func (c *Client) refreshConsole() {
 		}
 
 		// only update prompt if needed
-		if last_counter != c.counter {
+		if lastCounter != c.counter {
 			// choose color based on urgency
 			color := "\033[33m" // default is green color
 
-			mining_string := ""
+			miningString := ""
 
 			if mining {
-				mining_speed := float64(c.counter-last_counter) / (float64(uint64(time.Since(last_counter_time))) / 1000000000.0)
-				c.hashrate = uint64(mining_speed)
-				last_counter = c.counter
-				last_counter_time = time.Now()
+				miningSpeed := float64(c.counter-lastCounter) / (float64(uint64(time.Since(lastCounterTime))) / 1000000000.0)
+				c.hashrate = uint64(miningSpeed)
+				lastCounter = c.counter
+				lastCounterTime = time.Now()
 				switch {
-				case mining_speed > 1000000:
-					mining_string = fmt.Sprintf("MINING @ %.3f MH/s", float32(mining_speed)/1000000.0)
-				case mining_speed > 1000:
-					mining_string = fmt.Sprintf("MINING @ %.3f KH/s", float32(mining_speed)/1000.0)
-				case mining_speed > 0:
-					mining_string = fmt.Sprintf("MINING @ %.0f H/s", mining_speed)
+				case miningSpeed > 1000000:
+					miningString = fmt.Sprintf("MINING @ %.3f MH/s", float32(miningSpeed)/1000000.0)
+				case miningSpeed > 1000:
+					miningString = fmt.Sprintf("MINING @ %.3f KH/s", float32(miningSpeed)/1000.0)
+				case miningSpeed > 0:
+					miningString = fmt.Sprintf("MINING @ %.0f H/s", miningSpeed)
 				}
 			}
 
-			testnet_string := ""
+			testnetString := ""
 			if c.config.Testnet {
-				testnet_string = "\033[31m TESTNET"
+				testnetString = "\033[31m TESTNET"
 			}
 
-			c.console.SetPrompt(fmt.Sprintf("\033[1m\033[32mDERO Miner: \033[0m"+color+"Shares %d Rejected %d \033[32m%s>%s>>\033[0m ", c.shareCounter, c.rejectedCounter, mining_string, testnet_string))
+			c.console.SetPrompt(fmt.Sprintf("\033[1m\033[32mDERO Miner: \033[0m"+color+"Shares %d Rejected %d \033[32m%s>%s>>\033[0m ", c.shareCounter, c.rejectedCounter, miningString, testnetString))
 			c.console.Refresh()
 		}
 		time.Sleep(1 * time.Second)

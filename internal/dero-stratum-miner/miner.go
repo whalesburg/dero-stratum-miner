@@ -50,7 +50,6 @@ type Client struct {
 	iterations int
 	counter    uint64
 	hashrate   uint64
-	difficulty uint64
 
 	shareCounter    uint64
 	rejectedCounter uint64
@@ -125,11 +124,16 @@ func (c *Client) getwork() {
 		respListener := c.stratum.NewResponseListener(2)
 		go c.listenStratumResponses(respListener)
 
-		for j := range jobListener.Ch() {
-			c.mu.Lock()
-			c.job = j
-			c.jobCounter++
-			c.mu.Unlock()
+		for {
+			select {
+			case j := <-jobListener.Ch():
+				c.mu.Lock()
+				c.job = j
+				c.jobCounter++
+				c.mu.Unlock()
+			case <-c.ctx.Done():
+				return
+			}
 		}
 	}
 }
@@ -148,7 +152,7 @@ func (c *Client) mineblock(tid int) {
 
 	var randomBuf [12]byte
 
-	rand.Read(randomBuf[:])
+	rand.Read(randomBuf[:]) //#nosec G404
 
 	time.Sleep(1 * time.Second)
 
@@ -197,7 +201,7 @@ func (c *Client) mineblock(tid int) {
 			if CheckPowHashBig(powhash, &diff) { // note we are doing a local, NW might have moved meanwhile
 				c.logger.V(1).Info("Successfully found share (going to submit)", "difficulty", myjob.Difficulty, "height", myjob.Height)
 				func() {
-					defer c.recover(1)
+					defer c.recover(1) // nolint: errcheck
 					nonce := work[len(work)-12:]
 					share := stratum.NewShare(myjob.ID, fmt.Sprintf("%x", nonce), fmt.Sprintf("%x", powhash[:]))
 					if err := c.stratum.SubmitShare(share); err != nil {
@@ -211,8 +215,8 @@ func (c *Client) mineblock(tid int) {
 
 func (c *Client) recover(level int) (err error) {
 	if r := recover(); r != nil {
-		err = fmt.Errorf("Recovered r:%+v stack %s", r, fmt.Sprintf("%s", string(debug.Stack())))
-		c.logger.V(level).Error(nil, "Recovered ", "error", r, "stack", fmt.Sprintf("%s", string(debug.Stack())))
+		err = fmt.Errorf("Recovered r:%+v stack %s", r, string(debug.Stack()))
+		c.logger.V(level).Error(nil, "Recovered ", "error", r, "stack", string(debug.Stack()))
 	}
 	return
 }

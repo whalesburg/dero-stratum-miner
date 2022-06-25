@@ -75,12 +75,10 @@ func ConvertIntegerDifficultyToBig(difficultyi *big.Int) *big.Int {
 
 // this function check whether the pow hash meets difficulty criteria
 // however, it take diff in  bigint format
-func CheckPowHashBig(pow_hash crypto.Hash, big_difficulty_integer *big.Int) bool {
-	big_pow_hash := HashToBig(pow_hash)
+func CheckPowHashBig(powHash crypto.Hash, bigDifficultyInteger *big.Int) bool {
+	bigPowHash := HashToBig(powHash)
 
-	big_difficulty := ConvertIntegerDifficultyToBig(big_difficulty_integer)
-	if big_pow_hash.Cmp(big_difficulty) <= 0 { // if work_pow is less than difficulty
-		return true
-	}
-	return false
+	bigDifficulty := ConvertIntegerDifficultyToBig(bigDifficultyInteger)
+
+	return bigPowHash.Cmp(bigDifficulty) <= 0 // if work_pow is less than difficulty
 }

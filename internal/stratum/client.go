@@ -214,12 +214,6 @@ func (c *Client) makeBackoff() backoff.Backoff {
 	}
 }
 
-func (c *Client) setState(state int) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	c.state = state
-}
-
 func (c *Client) isState(s int) bool {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
@@ -257,7 +251,7 @@ func (c *Client) call(method string, args any) (*Request, error) {
 		return nil, fmt.Errorf("failed to parse request: %v", err)
 	}
 
-	c.conn.SetWriteDeadline(time.Now().Add(c.writeTimeout))
+	c.conn.SetWriteDeadline(time.Now().Add(c.writeTimeout)) // nolint: errcheck
 	if _, err := c.conn.Write(data); err != nil {
 		c.CloseAndReconnect()
 		c.LogFn.Error(err, "failed to write request")
@@ -369,7 +363,7 @@ func (c *Client) readLine() ([]byte, error) {
 	if !c.IsConnected() {
 		return nil, ErrNotConnected
 	}
-	c.conn.SetReadDeadline(time.Now().Add(c.readTimeout))
+	c.conn.SetReadDeadline(time.Now().Add(c.readTimeout)) // nolint: errcheck
 	line, err := c.reader.ReadBytes('\n')
 	if err != nil {
 		c.CloseAndReconnect()

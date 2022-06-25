@@ -8,14 +8,14 @@ import (
 type ErrorCode int
 
 const (
-	ERROR_UNKNOWN                ErrorCode = -1
-	ERROR_SERVICE                ErrorCode = -2
-	ERROR_METHOD                 ErrorCode = -3
-	ERROR_FEE_REQUIRED           ErrorCode = -10
-	ERROR_SIGNATURE_REQUIRED     ErrorCode = -20
-	ERROR_SIGNATURE_UNAVAILABLE  ErrorCode = -21
-	ERROR_UNKNOWN_SIGNATURE_TYPE ErrorCode = -22
-	ERROR_BAD_SIGNATURE          ErrorCode = -23
+	ErrUnknown              ErrorCode = -1
+	ErrService              ErrorCode = -2
+	ErrMethod               ErrorCode = -3
+	ErrFeeRequired          ErrorCode = -10
+	ErrSignatureRequired    ErrorCode = -20
+	ErrSignatureUnavailable ErrorCode = -21
+	ErrUnkownSignatureType  ErrorCode = -22
+	ErrBadSignature         ErrorCode = -23
 )
 
 type Error struct {

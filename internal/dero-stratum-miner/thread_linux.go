@@ -29,21 +29,20 @@ var processor int32
 func threadaffinity() {
 	var cpuset unix.CPUSet
 
-	lock_on_cpu := atomic.AddInt32(&processor, 1)
-	if lock_on_cpu >= int32(runtime.GOMAXPROCS(0)) { // threads are more than cpu, we do not know what to do
+	lockOnCPU := atomic.AddInt32(&processor, 1)
+	if lockOnCPU >= int32(runtime.GOMAXPROCS(0)) { // threads are more than cpu, we do not know what to do
 		return
 	}
 	cpuset.Zero()
-	cpuset.Set(int(avoidHT(int(lock_on_cpu))))
+	cpuset.Set(avoidHT(int(lockOnCPU)))
 
-	unix.SchedSetaffinity(0, &cpuset)
+	unix.SchedSetaffinity(0, &cpuset) // nolint: errcheck
 }
 
 func avoidHT(i int) int {
 	count := runtime.GOMAXPROCS(0)
 	if i < count/2 {
 		return i * 2
-	} else {
-		return (i-count/2)*2 + 1
 	}
+	return (i-count/2)*2 + 1
 }

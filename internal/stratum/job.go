@@ -56,10 +56,9 @@ func extractJob(data map[string]any) (*Job, error) {
 		return nil, errors.New("failed to decode target")
 	}
 	var a = binary.LittleEndian.Uint64(raw)
-	job.Difficulty = uint64(0xFFFFFFFFFFFFFFFF / a)
+	job.Difficulty = 0xFFFFFFFFFFFFFFFF / a
 
 	return &job, nil
-
 }
 
 func (c *Client) broadcastJob(job *Job) {

@@ -23,9 +23,9 @@ type Limits struct {
 func init() {
 	switch runtime.GOOS {
 	case "darwin":
-		unix.Setrlimit(unix.RLIMIT_NOFILE, &unix.Rlimit{Max: OSXMax, Cur: OSXMax})
+		unix.Setrlimit(unix.RLIMIT_NOFILE, &unix.Rlimit{Max: OSXMax, Cur: OSXMax}) // nolint: errcheck
 	case "linux", "netbsd", "openbsd", "freebsd":
-		unix.Setrlimit(unix.RLIMIT_NOFILE, &unix.Rlimit{Max: UnixMax, Cur: UnixMax})
+		unix.Setrlimit(unix.RLIMIT_NOFILE, &unix.Rlimit{Max: UnixMax, Cur: UnixMax}) // nolint: errcheck
 	default: // nothing to do
 	}
 }
@@ -35,7 +35,7 @@ func Get() (*Limits, error) {
 	if err := unix.Getrlimit(unix.RLIMIT_NOFILE, &rLimit); err != nil {
 		return nil, err
 	}
-	return &Limits{Current: uint64(rLimit.Cur), Max: uint64(rLimit.Max)}, nil
+	return &Limits{Current: rLimit.Cur, Max: rLimit.Max}, nil
 }
 
 /*

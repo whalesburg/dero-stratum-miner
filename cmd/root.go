@@ -35,7 +35,7 @@ func init() {
 	rootCmd.AddCommand(versionCmd, manCmd)
 
 	rootCmd.Flags().StringVarP(&cfg.Wallet, "wallet-address", "w", "", "wallet of the miner. Rewards will be sent to this address")
-	rootCmd.MarkFlagRequired("wallet-address")
+	rootCmd.MarkFlagRequired("wallet-address") // nolint: errcheck
 
 	rootCmd.Flags().BoolVarP(&cfg.Testnet, "testnet", "t", false, "use testnet")
 	rootCmd.Flags().StringVarP(&cfg.PoolURL, "daemon-rpc-address", "r", "pool.whalesburg.com:tbd", "stratum pool url")
