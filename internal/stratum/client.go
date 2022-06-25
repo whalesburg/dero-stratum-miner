@@ -45,6 +45,18 @@ func WithUseTLS() Opts {
 	}
 }
 
+func WithDebugLogger(logger func(string)) Opts {
+	return func(c *Client) {
+		c.LogFn.Debug = logger
+	}
+}
+
+func WithErrorLogger(logger func(error, string)) Opts {
+	return func(c *Client) {
+		c.LogFn.Error = logger
+	}
+}
+
 type Client struct {
 	id               int
 	url              string
@@ -70,6 +82,12 @@ type Client struct {
 	lastSubmittedShare *Share
 
 	submitMu sync.Mutex
+	LogFn    logFnOptions
+}
+
+type logFnOptions struct {
+	Debug func(string)
+	Error func(error, string)
 }
 
 func New(url string, opts ...Opts) *Client {
@@ -81,6 +99,10 @@ func New(url string, opts ...Opts) *Client {
 		respBroadcaster:    broadcast.NewRelay[*Response](),
 		lastSubmittedShare: &Share{},
 		submittedJobIds:    make(map[int]struct{}),
+		LogFn: logFnOptions{
+			Debug: func(string) {},
+			Error: func(error, string) {},
+		},
 	}
 	for _, opt := range opts {
 		opt(c)
@@ -146,14 +168,14 @@ func (c *Client) handleMessages() {
 	for {
 		line, err := c.readLine()
 		if err != nil {
-			//TODO: debug logger
+			c.LogFn.Error(err, "failed to read line")
 			break
 		}
 
 		//TODO: debug logger
 		var msg map[string]interface{}
 		if err = json.Unmarshal(line, &msg); err != nil {
-			//TODO: debug logger
+			c.LogFn.Error(err, "failed to unmarshal message")
 			break
 		}
 
@@ -163,8 +185,7 @@ func (c *Client) handleMessages() {
 			// This is a response
 			response, err := parseResponse(line)
 			if err != nil {
-				fmt.Println(err)
-				//TODO: debug logger
+				c.LogFn.Error(err, "failed to parse response")
 				continue
 			}
 			isError := false
@@ -183,11 +204,11 @@ func (c *Client) handleMessages() {
 					delete(c.submittedJobIds, id)
 					c.acceptedShares++
 					c.submittedShares++
-					//TODO: debug logger
+					c.LogFn.Debug(fmt.Sprintf("accepted share %d", id))
 				} else {
 					delete(c.submittedJobIds, id)
 					c.submittedShares++
-					//TODO: debug logger
+					c.LogFn.Debug(fmt.Sprintf("rejected share %d", id))
 				}
 			} else {
 				statusIntf, ok := response.Result.(map[string]any)

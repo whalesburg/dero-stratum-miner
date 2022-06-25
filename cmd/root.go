@@ -11,8 +11,11 @@ import (
 	"syscall"
 
 	"github.com/deroproject/derohe/rpc"
+	"github.com/go-logr/logr"
 	"github.com/muesli/coral"
+	"github.com/stratumfarm/dero-stratum-miner/internal/console"
 	miner "github.com/stratumfarm/dero-stratum-miner/internal/dero-stratum-miner"
+	"github.com/stratumfarm/dero-stratum-miner/internal/logging"
 	"github.com/stratumfarm/dero-stratum-miner/internal/stratum"
 )
 
@@ -81,8 +84,25 @@ func rootHandler(cmd *coral.Command, args []string) error {
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
+	cli, err := console.New()
+	if err != nil {
+		log.Fatalln("failed to create console:", err)
+	}
+
+	exename, err := os.Executable()
+	if err != nil {
+		return err
+	}
+	f, err := os.Create(exename + ".log")
+	if err != nil {
+		return fmt.Errorf("Error while opening log file err: %s filename %s\n", err, exename+".log")
+	}
+	logger := logging.New(cli.Stdout(), f, cfg.Debug, cfg.CLogLevel, cfg.FLogLevel)
+
 	ctx, cancel := context.WithCancel(cmd.Context())
-	m, err := miner.New(ctx, cancel, newStratumClient(ctx, cfg.PoolURL, cfg.Wallet), cfg)
+	stc := newStratumClient(ctx, cfg.PoolURL, cfg.Wallet, logger)
+
+	m, err := miner.New(ctx, cancel, cfg, stc, cli, logger)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -103,7 +123,7 @@ func rootHandler(cmd *coral.Command, args []string) error {
 	return nil
 }
 
-func newStratumClient(ctx context.Context, url, addr string) *stratum.Client {
+func newStratumClient(ctx context.Context, url, addr string, logger logr.Logger) *stratum.Client {
 	var useTLS bool
 	if strings.HasPrefix(url, "tls://") || strings.HasPrefix(url, "ssl://") || strings.HasPrefix(url, "https://") {
 		useTLS = true
@@ -118,9 +138,16 @@ func newStratumClient(ctx context.Context, url, addr string) *stratum.Client {
 	opts := []stratum.Opts{
 		stratum.WithUsername(addr),
 		stratum.WithContext(ctx),
+		stratum.WithDebugLogger(func(s string) {
+			logger.V(1).Info(s)
+		}),
+		stratum.WithErrorLogger(func(err error, s string) {
+			logger.Error(err, s)
+		}),
 	}
 	if useTLS {
 		opts = append(opts, stratum.WithUseTLS())
 	}
+
 	return stratum.New(url, opts...)
 }
