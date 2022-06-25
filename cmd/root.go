@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/deroproject/derohe/rpc"
 	"github.com/go-logr/logr"
@@ -125,19 +126,20 @@ func rootHandler(cmd *coral.Command, args []string) error {
 
 func newStratumClient(ctx context.Context, url, addr string, logger logr.Logger) *stratum.Client {
 	var useTLS bool
-	if strings.HasPrefix(url, "tls://") || strings.HasPrefix(url, "ssl://") || strings.HasPrefix(url, "https://") {
+	if strings.HasPrefix(url, "stratum+tls://") || strings.HasPrefix(url, "stratum+ssl://") {
 		useTLS = true
-		url = strings.TrimPrefix(url, "tls://")
-		url = strings.TrimPrefix(url, "ssl://")
-		url = strings.TrimPrefix(url, "https://")
+		url = strings.TrimPrefix(url, "stratum+tls://")
+		url = strings.TrimPrefix(url, "stratum+ssl://")
 	} else {
 		useTLS = false
-		url = strings.TrimPrefix(url, "http://")
+		url = strings.TrimPrefix(url, "stratum://")
 		url = strings.TrimPrefix(url, "tcp://")
 	}
 	opts := []stratum.Opts{
 		stratum.WithUsername(addr),
 		stratum.WithContext(ctx),
+		stratum.WithReadTimeout(time.Second * 10),
+		stratum.WithWriteTimeout(10 * time.Second),
 		stratum.WithDebugLogger(func(s string) {
 			logger.V(1).Info(s)
 		}),

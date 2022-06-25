@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"errors"
+	"fmt"
 )
 
 type Job struct {
@@ -62,5 +63,6 @@ func extractJob(data map[string]any) (*Job, error) {
 }
 
 func (c *Client) broadcastJob(job *Job) {
+	c.LogFn.Debug(fmt.Sprintf("received job %s", job.ID))
 	c.jobBroadcaster.Notify(job)
 }

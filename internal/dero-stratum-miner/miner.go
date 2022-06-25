@@ -2,11 +2,11 @@ package miner
 
 import (
 	"context"
-	"crypto/rand"
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
 	"math/big"
+	"math/rand"
 	"runtime"
 	"runtime/debug"
 	"strconv"
@@ -16,6 +16,7 @@ import (
 
 	"github.com/chzyer/readline"
 	"github.com/go-logr/logr"
+	"github.com/jpillora/backoff"
 	"github.com/stratumfarm/dero-stratum-miner/internal/stratum"
 	"github.com/stratumfarm/derohe/astrobwt/astrobwtv3"
 	"github.com/stratumfarm/derohe/block"
@@ -97,27 +98,32 @@ func (c *Client) Start() error {
 	return nil
 }
 
+func (c *Client) makeBackoff() backoff.Backoff {
+	return backoff.Backoff{
+		Min:    time.Second,
+		Max:    time.Second * 30,
+		Factor: 1.5,
+		Jitter: true,
+	}
+}
+
 func (c *Client) getwork() {
+	b := c.makeBackoff()
+	rand.Seed(time.Now().UTC().UnixNano())
 	for {
-		if err := c.stratum.Connect(); err != nil {
+		if err := c.stratum.Dial(); err != nil {
+			waitDuration := b.Duration()
 			c.logger.Error(err, "Error connecting to server", "server adress", c.config.PoolURL)
-			c.logger.Info("Will try in 10 secs", "server adress", c.config.PoolURL)
-			time.Sleep(10 * time.Second)
+			c.logger.Info(fmt.Sprintf("Will try again in %f seconds", waitDuration.Seconds()))
+			time.Sleep(waitDuration)
 			continue
 		}
 
-		jobListener := c.stratum.NewJobListener(1)
+		jobListener := c.stratum.NewJobListener(4)
 		defer jobListener.Close()
 
-		respListener := c.stratum.NewResponseListener(3)
+		respListener := c.stratum.NewResponseListener(2)
 		go c.listenStratumResponses(respListener)
-
-		if err := c.stratum.Authorize(); err != nil {
-			c.logger.Error(err, "Error authorizing client", "server adress", c.config.PoolURL)
-			c.logger.Info("Will try in 10 secs", "server adress", c.config.PoolURL)
-			time.Sleep(10 * time.Second)
-			continue
-		}
 
 		for j := range jobListener.Ch() {
 			c.mu.Lock()
@@ -144,7 +150,7 @@ func (c *Client) mineblock(tid int) {
 
 	rand.Read(randomBuf[:])
 
-	time.Sleep(2 * time.Second)
+	time.Sleep(1 * time.Second)
 
 	nonceBuf := work[block.MINIBLOCK_SIZE-5:] //since slices are linked, it modifies parent
 	runtime.LockOSThread()
@@ -157,12 +163,12 @@ func (c *Client) mineblock(tid int) {
 	for {
 		c.mu.RLock()
 		myjob := c.job
+		localJobCounter = c.jobCounter
+		c.mu.RUnlock()
 		if myjob == nil {
 			time.Sleep(time.Second)
 			continue
 		}
-		localJobCounter = c.jobCounter
-		c.mu.RUnlock()
 
 		n, err := hex.Decode(work[:], []byte(myjob.Blob))
 		if err != nil || n != block.MINIBLOCK_SIZE {
