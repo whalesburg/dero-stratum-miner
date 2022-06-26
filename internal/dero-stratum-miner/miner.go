@@ -218,11 +218,31 @@ func (c *Client) reportHashrate() {
 	for {
 		select {
 		case <-ticker.C:
-			if err := c.stratum.ReportHashrate(stratum.NewReport(c.hashrate)); err != nil {
+			if err := c.stratum.ReportHashrate(stratum.NewReport(c.GetHashrate())); err != nil {
 				c.logger.Error(err, "Failed to report hashrate")
 			}
 		case <-c.ctx.Done():
 			return
 		}
 	}
+}
+
+func (c *Client) GetHashrate() uint64 {
+	return c.hashrate
+}
+
+func (c *Client) GetTotalShares() uint64 {
+	return c.shareCounter
+}
+
+func (c *Client) GetAcceptedShares() uint64 {
+	return c.shareCounter - c.rejectedCounter
+}
+
+func (c *Client) GetRejectedShares() uint64 {
+	return c.rejectedCounter
+}
+
+func (c *Client) GetPoolURL() string {
+	return c.config.PoolURL
 }
