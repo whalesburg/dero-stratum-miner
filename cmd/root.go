@@ -16,6 +16,7 @@ import (
 	"github.com/muesli/coral"
 	mcoral "github.com/muesli/mango-coral"
 	"github.com/muesli/roff"
+	"github.com/stratumfarm/dero-stratum-miner/internal/api"
 	"github.com/stratumfarm/dero-stratum-miner/internal/config"
 	"github.com/stratumfarm/dero-stratum-miner/internal/console"
 	miner "github.com/stratumfarm/dero-stratum-miner/internal/dero-stratum-miner"
@@ -117,6 +118,14 @@ func rootHandler(cmd *coral.Command, args []string) error {
 
 	go func() {
 		if err := m.Start(); err != nil {
+			log.Fatalln(err)
+		}
+	}()
+
+	api := api.New(ctx, m, cfg.API, logger)
+	defer api.Close()
+	go func() {
+		if err := api.Serve(); err != nil {
 			log.Fatalln(err)
 		}
 	}()
