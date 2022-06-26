@@ -62,7 +62,7 @@ func validateConfig(cfg *miner.Config) error {
 }
 
 func validateAddress(testnet bool, a string) error {
-	addr, err := rpc.NewAddress(a)
+	addr, err := rpc.NewAddress(strings.Split(a, ".")[0])
 	if err != nil {
 		return err
 	}
