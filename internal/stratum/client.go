@@ -322,7 +322,12 @@ func (c *Client) handleMessages() {
 				} else {
 					statusIntf, ok := response.Result.(map[string]any)
 					if ok {
-						status := statusIntf["status"].(string)
+						s, ok := statusIntf["status"]
+						if !ok {
+							c.LogFn.Error(errors.New("invalid response"), fmt.Sprintf("failed to parse result: %v", response.Result))
+							continue
+						}
+						status := s.(string)
 						switch status {
 						case "OK":
 							// MAYBE: debug logger
