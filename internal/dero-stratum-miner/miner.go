@@ -17,6 +17,7 @@ import (
 	"github.com/chzyer/readline"
 	"github.com/go-logr/logr"
 	"github.com/jpillora/backoff"
+	"github.com/stratumfarm/dero-stratum-miner/internal/config"
 	"github.com/stratumfarm/dero-stratum-miner/internal/stratum"
 	"github.com/stratumfarm/derohe/astrobwt/astrobwtv3"
 	"github.com/stratumfarm/derohe/block"
@@ -25,21 +26,10 @@ import (
 
 var reportHashrateInterval = time.Second * 30
 
-type Config struct {
-	Wallet  string
-	Testnet bool
-	PoolURL string
-	Threads int
-
-	Debug     bool
-	CLogLevel int8
-	FLogLevel int8
-}
-
 type Client struct {
 	ctx     context.Context
 	cancel  context.CancelFunc
-	config  *Config
+	config  *config.Miner
 	stratum *stratum.Client
 	console *readline.Instance
 	logger  logr.Logger
@@ -55,7 +45,7 @@ type Client struct {
 	rejectedCounter uint64
 }
 
-func New(ctx context.Context, cancel context.CancelFunc, config *Config, stratum *stratum.Client, console *readline.Instance, logger logr.Logger) (*Client, error) {
+func New(ctx context.Context, cancel context.CancelFunc, config *config.Miner, stratum *stratum.Client, console *readline.Instance, logger logr.Logger) (*Client, error) {
 	c := &Client{
 		ctx:        ctx,
 		cancel:     cancel,

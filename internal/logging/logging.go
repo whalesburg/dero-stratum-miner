@@ -5,33 +5,34 @@ import (
 
 	"github.com/go-logr/logr"
 	"github.com/go-logr/zapr"
+	"github.com/stratumfarm/dero-stratum-miner/internal/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-func New(console, logfile io.Writer, debug bool, clogLevel, flogLevel int8) logr.Logger {
+func New(console, logfile io.Writer, cfg *config.Logger) logr.Logger {
 	var logLevelConsole zap.AtomicLevel
-	if debug { // setup debug mode if requested
-		clogLevel = 1
-		flogLevel = 1
+	if cfg.Debug { // setup debug mode if requested
+		cfg.CLogLevel = 1
+		cfg.FLogLevel = 1
 	}
 
-	if clogLevel < 0 {
-		clogLevel = 0
+	if cfg.CLogLevel < 0 {
+		cfg.CLogLevel = 0
 	}
-	if clogLevel > 127 {
-		clogLevel = 127
+	if cfg.CLogLevel > 127 {
+		cfg.CLogLevel = 127
 	}
-	logLevelConsole = zap.NewAtomicLevelAt(zapcore.Level(0 - clogLevel))
+	logLevelConsole = zap.NewAtomicLevelAt(zapcore.Level(0 - cfg.CLogLevel))
 
 	var logLevelFile zap.AtomicLevel
-	if flogLevel < 0 {
-		flogLevel = 0
+	if cfg.FLogLevel < 0 {
+		cfg.FLogLevel = 0
 	}
-	if flogLevel > 127 {
-		flogLevel = 127
+	if cfg.FLogLevel > 127 {
+		cfg.FLogLevel = 127
 	}
-	logLevelFile = zap.NewAtomicLevelAt(zapcore.Level(0 - flogLevel))
+	logLevelFile = zap.NewAtomicLevelAt(zapcore.Level(0 - cfg.FLogLevel))
 
 	zf := zap.NewDevelopmentEncoderConfig()
 	zc := zap.NewDevelopmentEncoderConfig()

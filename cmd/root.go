@@ -16,6 +16,7 @@ import (
 	"github.com/muesli/coral"
 	mcoral "github.com/muesli/mango-coral"
 	"github.com/muesli/roff"
+	"github.com/stratumfarm/dero-stratum-miner/internal/config"
 	"github.com/stratumfarm/dero-stratum-miner/internal/console"
 	miner "github.com/stratumfarm/dero-stratum-miner/internal/dero-stratum-miner"
 	"github.com/stratumfarm/dero-stratum-miner/internal/logging"
@@ -23,7 +24,7 @@ import (
 	"github.com/stratumfarm/dero-stratum-miner/internal/version"
 )
 
-var cfg = &miner.Config{}
+var cfg = config.NewEmpty()
 
 var rootCmd = &coral.Command{
 	Use:   "dero-stratum-miner",
@@ -34,28 +35,28 @@ var rootCmd = &coral.Command{
 func init() {
 	rootCmd.AddCommand(versionCmd, manCmd)
 
-	rootCmd.Flags().StringVarP(&cfg.Wallet, "wallet-address", "w", "", "wallet of the miner. Rewards will be sent to this address")
+	rootCmd.Flags().StringVarP(&cfg.Miner.Wallet, "wallet-address", "w", "", "wallet of the miner. Rewards will be sent to this address")
 	rootCmd.MarkFlagRequired("wallet-address") // nolint: errcheck
 
-	rootCmd.Flags().BoolVarP(&cfg.Testnet, "testnet", "t", false, "use testnet")
-	rootCmd.Flags().StringVarP(&cfg.PoolURL, "daemon-rpc-address", "r", "pool.whalesburg.com:tbd", "stratum pool url")
-	rootCmd.Flags().IntVarP(&cfg.Threads, "mining-threads", "m", runtime.GOMAXPROCS(0), "number of threads to use")
+	rootCmd.Flags().BoolVarP(&cfg.Miner.Testnet, "testnet", "t", false, "use testnet")
+	rootCmd.Flags().StringVarP(&cfg.Miner.PoolURL, "daemon-rpc-address", "r", "pool.whalesburg.com:tbd", "stratum pool url")
+	rootCmd.Flags().IntVarP(&cfg.Miner.Threads, "mining-threads", "m", runtime.GOMAXPROCS(0), "number of threads to use")
 
-	rootCmd.Flags().BoolVar(&cfg.Debug, "debug", false, "enable debug mode")
-	rootCmd.Flags().Int8Var(&cfg.CLogLevel, "console-log-level", 0, "console log level")
-	rootCmd.Flags().Int8Var(&cfg.FLogLevel, "file-log-level", 0, "file log level")
+	rootCmd.Flags().BoolVar(&cfg.Logger.Debug, "debug", false, "enable debug mode")
+	rootCmd.Flags().Int8Var(&cfg.Logger.CLogLevel, "console-log-level", 0, "console log level")
+	rootCmd.Flags().Int8Var(&cfg.Logger.FLogLevel, "file-log-level", 0, "file log level")
 }
 
 func Execute() error {
 	return rootCmd.Execute()
 }
 
-func validateConfig(cfg *miner.Config) error {
-	if err := validateAddress(cfg.Testnet, cfg.Wallet); err != nil {
+func validateConfig(cfg *config.Config) error {
+	if err := validateAddress(cfg.Miner.Testnet, cfg.Miner.Wallet); err != nil {
 		return err
 	}
-	if cfg.Threads > runtime.GOMAXPROCS(0) {
-		return fmt.Errorf("Mining threads is more than available CPUs. This is NOT optimal. Threads count: %d, max possible: %d", cfg.Threads, runtime.GOMAXPROCS(0))
+	if cfg.Miner.Threads > runtime.GOMAXPROCS(0) {
+		return fmt.Errorf("Mining threads is more than available CPUs. This is NOT optimal. Threads count: %d, max possible: %d", cfg.Miner.Threads, runtime.GOMAXPROCS(0))
 	}
 
 	return nil
@@ -101,12 +102,12 @@ func rootHandler(cmd *coral.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("Error while opening log file err: %s filename %s", err, exename+".log")
 	}
-	logger := logging.New(cli.Stdout(), f, cfg.Debug, cfg.CLogLevel, cfg.FLogLevel)
+	logger := logging.New(cli.Stdout(), f, cfg.Logger)
 
 	ctx, cancel := context.WithCancel(cmd.Context())
-	stc := newStratumClient(ctx, cfg.PoolURL, cfg.Wallet, logger)
+	stc := newStratumClient(ctx, cfg.Miner.PoolURL, cfg.Miner.Wallet, logger)
 
-	m, err := miner.New(ctx, cancel, cfg, stc, cli, logger)
+	m, err := miner.New(ctx, cancel, cfg.Miner, stc, cli, logger)
 	if err != nil {
 		log.Fatalln(err)
 	}
