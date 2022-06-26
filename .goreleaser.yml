@@ -97,7 +97,7 @@ changelog:
     - title: New Features
       regexp: "^.*feat[(\\w)]*:+.*$"
       order: 0
-    - title: Fixes'
+    - title: Fixes
       regexp: "^.*fix[(\\w)]*:+.*$"
       order: 10
     - title: Others
