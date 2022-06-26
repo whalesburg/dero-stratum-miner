@@ -6,7 +6,6 @@ import (
 	"os"
 	"path"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/go-logr/logr"
@@ -61,10 +60,8 @@ func (s *Server) MinerStats(ctx context.Context, args *any) (MinerStatRes, error
 		Runtime:  int(time.Since(s.startTime).Seconds()),
 		Accepted: s.m.GetAcceptedShares(),
 		Rejected: s.m.GetRejectedShares(),
-		Hashrates: []string{
-			fmt.Sprintf("%d", s.m.GetHashrate()),
-		},
-		Pool: s.m.GetPoolURL(),
+		Hashrate: fmt.Sprintf("%d", s.m.GetHashrate()),
+		Pool:     s.m.GetPoolURL(),
 	}
 	return m.Res(), nil
 }
@@ -72,12 +69,12 @@ func (s *Server) MinerStats(ctx context.Context, args *any) (MinerStatRes, error
 type MinerStatRes []string
 
 type MinerStat struct {
-	Version   string   // version string
-	Runtime   int      // runtime in seconds, can be 0
-	Accepted  uint64   // accepted shares
-	Rejected  uint64   // rejected shares
-	Hashrates []string // hashrate in hashes
-	Pool      string   // pool url
+	Version  string // version string
+	Runtime  int    // runtime in seconds, can be 0
+	Accepted uint64 // accepted shares
+	Rejected uint64 // rejected shares
+	Hashrate string // hashrate in hashes
+	Pool     string // pool url
 }
 
 func (m *MinerStat) Res() MinerStatRes {
@@ -85,7 +82,7 @@ func (m *MinerStat) Res() MinerStatRes {
 		fmt.Sprintf("%s %s", path.Base(os.Args[0]), m.Version),
 		strconv.Itoa(m.Runtime),
 		fmt.Sprintf("%d;%d;0", m.Accepted, m.Rejected),
-		strings.Join(m.Hashrates, ";"),
+		m.Hashrate,
 		"0",
 		"off",
 		"0;0",
