@@ -56,7 +56,7 @@ func (s *Server) Close() error {
 
 func (s *Server) MinerStats(ctx context.Context, args *any) (MinerStatRes, error) {
 	m := MinerStat{
-		Version:  version.Version,
+		Version:  fmt.Sprintf("%s %s", path.Base(os.Args[0]), version.Version),
 		Runtime:  int(time.Since(s.startTime).Seconds()),
 		Accepted: s.m.GetAcceptedShares(),
 		Rejected: s.m.GetRejectedShares(),
@@ -79,7 +79,7 @@ type MinerStat struct {
 
 func (m *MinerStat) Res() MinerStatRes {
 	return []string{
-		fmt.Sprintf("%s %s", path.Base(os.Args[0]), m.Version),
+		m.Version,
 		strconv.Itoa(m.Runtime),
 		fmt.Sprintf("%d;%d;0", m.Accepted, m.Rejected),
 		m.Hashrate,
