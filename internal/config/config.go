@@ -20,7 +20,8 @@ type Logger struct {
 }
 
 type API struct {
-	Listen string
+	Listen   string
+	Disabled bool
 }
 
 // NewEmpty returns a new empty config
