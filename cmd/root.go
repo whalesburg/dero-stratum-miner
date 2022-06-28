@@ -16,6 +16,7 @@ import (
 	"github.com/muesli/coral"
 	mcoral "github.com/muesli/mango-coral"
 	"github.com/muesli/roff"
+	"github.com/stratumfarm/dero-stratum-miner/internal/api"
 	"github.com/stratumfarm/dero-stratum-miner/internal/config"
 	"github.com/stratumfarm/dero-stratum-miner/internal/console"
 	miner "github.com/stratumfarm/dero-stratum-miner/internal/dero-stratum-miner"
@@ -45,6 +46,9 @@ func init() {
 	rootCmd.Flags().BoolVar(&cfg.Logger.Debug, "debug", false, "enable debug mode")
 	rootCmd.Flags().Int8Var(&cfg.Logger.CLogLevel, "console-log-level", 0, "console log level")
 	rootCmd.Flags().Int8Var(&cfg.Logger.FLogLevel, "file-log-level", 0, "file log level")
+
+	rootCmd.Flags().StringVar(&cfg.API.Listen, "api-listen", ":8080", "address to listen for API requests")
+	rootCmd.Flags().BoolVar(&cfg.API.Disabled, "api-disabled", false, "disable the API server")
 }
 
 func Execute() error {
@@ -118,6 +122,16 @@ func rootHandler(cmd *coral.Command, args []string) error {
 			log.Fatalln(err)
 		}
 	}()
+
+	if !cfg.API.Disabled {
+		api := api.New(ctx, m, cfg.API, logger)
+		defer api.Close()
+		go func() {
+			if err := api.Serve(); err != nil {
+				log.Fatalln(err)
+			}
+		}()
+	}
 
 	select {
 	case <-done:

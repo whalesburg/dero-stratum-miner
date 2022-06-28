@@ -3,6 +3,7 @@ package config
 type Config struct {
 	Miner  *Miner
 	Logger *Logger
+	API    *API
 }
 
 type Miner struct {
@@ -18,10 +19,16 @@ type Logger struct {
 	FLogLevel int8
 }
 
+type API struct {
+	Listen   string
+	Disabled bool
+}
+
 // NewEmpty returns a new empty config
 func NewEmpty() *Config {
 	return &Config{
 		Miner:  &Miner{},
 		Logger: &Logger{},
+		API:    &API{},
 	}
 }
