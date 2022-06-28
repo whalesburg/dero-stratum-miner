@@ -152,6 +152,7 @@ func newStratumClient(ctx context.Context, url, addr string, logger logr.Logger)
 		useTLS = false
 		url = strings.TrimPrefix(url, "stratum://")
 		url = strings.TrimPrefix(url, "tcp://")
+		url = strings.TrimPrefix(url, "stratum+tcp://")
 	}
 	opts := []stratum.Opts{
 		stratum.WithUsername(addr),
