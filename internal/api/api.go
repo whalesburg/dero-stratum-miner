@@ -29,7 +29,7 @@ func New(ctx context.Context, m *miner.Client, cfg *config.API, logr logr.Logger
 	ctx, cancel := context.WithCancel(ctx)
 	r := rpc.New(
 		rpc.WithLogger(&logger{logr}),
-		rpc.WithTransport(&transport.TCP{Bind: cfg.Listen, Parallel: true}),
+		rpc.WithTransport(&transport.HTTP{Bind: cfg.Listen, Parallel: true}),
 	)
 	s := &Server{
 		ctx:    ctx,
@@ -38,7 +38,7 @@ func New(ctx context.Context, m *miner.Client, cfg *config.API, logr logr.Logger
 		r:      r,
 		m:      m,
 	}
-	s.r.Register("miner_getstat1", rpc.H(s.MinerStats))
+	s.r.Register("miner_getstat1", rpc.HS(s.MinerStats))
 	return s
 }
 
@@ -54,7 +54,7 @@ func (s *Server) Close() error {
 	return nil
 }
 
-func (s *Server) MinerStats(ctx context.Context, args *any) (MinerStatRes, error) {
+func (s *Server) MinerStats(ctx context.Context) (MinerStatRes, error) {
 	m := MinerStat{
 		Version:  fmt.Sprintf("%s %s", path.Base(os.Args[0]), version.Version),
 		Runtime:  int(time.Since(s.startTime).Seconds()),

@@ -14,7 +14,7 @@ require (
 	github.com/stratumfarm/derohe v0.0.0-20220610114855-d6de66e1986c
 	github.com/stretchr/testify v1.7.2
 	github.com/teivah/broadcast v0.1.0
-	go.neonxp.dev/jsonrpc2 v1.1.3
+	go.neonxp.dev/jsonrpc2 v1.2.0
 	go.uber.org/zap v1.21.0
 	golang.org/x/sys v0.0.0-20220615213510-4f61da869c0c
 )
