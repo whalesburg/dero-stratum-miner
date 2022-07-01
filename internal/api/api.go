@@ -29,7 +29,7 @@ func New(ctx context.Context, m *miner.Client, cfg *config.API, logr logr.Logger
 	ctx, cancel := context.WithCancel(ctx)
 	r := rpc.New(
 		rpc.WithLogger(&logger{logr}),
-		rpc.WithTransport(&transport.HTTP{Bind: cfg.Listen, Parallel: true}),
+		rpc.WithTransport(&transport.TCP{Bind: cfg.Listen, Parallel: true}),
 	)
 	s := &Server{
 		ctx:    ctx,
