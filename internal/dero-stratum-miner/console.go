@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/chzyer/readline"
+	"github.com/jon4hz/hashconv"
 	"github.com/stratumfarm/dero-stratum-miner/internal/version"
 )
 
@@ -99,14 +100,7 @@ func (c *Client) refreshConsole() {
 				c.hashrate = uint64(miningSpeed)
 				lastCounter = c.counter
 				lastCounterTime = time.Now()
-				switch {
-				case miningSpeed > 1000000:
-					miningString = fmt.Sprintf("MINING @ %.3f MH/s", float32(miningSpeed)/1000000.0)
-				case miningSpeed > 1000:
-					miningString = fmt.Sprintf("MINING @ %.3f KH/s", float32(miningSpeed)/1000.0)
-				case miningSpeed > 0:
-					miningString = fmt.Sprintf("MINING @ %.0f H/s", miningSpeed)
-				}
+				miningString = fmt.Sprintf("MINING @ %s/s", hashconv.Format(int64(miningSpeed)))
 			}
 
 			testnetString := ""
