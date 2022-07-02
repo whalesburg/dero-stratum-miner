@@ -182,6 +182,10 @@ func (c *Client) mineblock(tid int) {
 		}
 
 		for localJobCounter == c.jobCounter { // update job when it comes, expected rate 1 per second
+			if !c.stratum.IsConnected() {
+				time.Sleep(time.Second)
+				continue
+			}
 			i++
 			binary.BigEndian.PutUint32(nonceBuf, i)
 
