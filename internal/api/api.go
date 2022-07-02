@@ -81,7 +81,7 @@ func (m *MinerStat) Res() MinerStatRes {
 	return []string{
 		m.Version,
 		strconv.Itoa(m.Runtime),
-		fmt.Sprintf("%d;%d;0", m.Accepted, m.Rejected),
+		fmt.Sprintf("%s;%d;%d", m.Hashrate, m.Accepted, m.Rejected),
 		m.Hashrate,
 		"0",
 		"off",
