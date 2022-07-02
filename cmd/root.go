@@ -162,6 +162,9 @@ func newStratumClient(ctx context.Context, url, addr string, logger logr.Logger)
 		stratum.WithDebugLogger(func(s string) {
 			logger.V(1).Info(s)
 		}),
+		stratum.WithInfoLogger(func(s string) {
+			logger.Info(s)
+		}),
 		stratum.WithErrorLogger(func(err error, s string) {
 			logger.Error(err, s)
 		}),

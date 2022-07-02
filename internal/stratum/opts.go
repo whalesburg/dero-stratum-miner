@@ -55,6 +55,12 @@ func WithDebugLogger(logger func(string)) Opts {
 	}
 }
 
+func WithInfoLogger(logger func(string)) Opts {
+	return func(c *Client) {
+		c.LogFn.Info = logger
+	}
+}
+
 func WithErrorLogger(logger func(error, string)) Opts {
 	return func(c *Client) {
 		c.LogFn.Error = logger
