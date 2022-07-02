@@ -91,6 +91,7 @@ func (c *Client) refreshConsole() {
 
 		var miningString string
 
+		// we assume that the miner stopped if the conolse wasn't updated within the last five seconds.
 		if time.Since(lastUpdate) > time.Second*5 {
 			if mining {
 				miningString = "\033[31mNOT MINING"
