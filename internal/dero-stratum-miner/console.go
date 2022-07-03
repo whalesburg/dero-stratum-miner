@@ -80,7 +80,8 @@ func (c *Client) refreshConsole() {
 	lastCounter := uint64(0)
 	lastCounterTime := time.Now()
 
-	mining := true
+	var mining bool
+	lastUpdate := time.Now()
 	for {
 		select {
 		case <-c.ctx.Done():
@@ -88,12 +89,27 @@ func (c *Client) refreshConsole() {
 		default:
 		}
 
+		var miningString string
+
+		// we assume that the miner stopped if the conolse wasn't updated within the last five seconds.
+		if time.Since(lastUpdate) > time.Second*5 {
+			if mining {
+				miningString = "\033[31mNOT MINING"
+				testnetString := ""
+				if c.config.Testnet {
+					testnetString = "\033[31m TESTNET"
+				}
+				c.setPrompt("\033[33m", miningString, testnetString)
+				mining = false
+			}
+		} else {
+			mining = true
+		}
+
 		// only update prompt if needed
 		if lastCounter != c.counter {
 			// choose color based on urgency
 			color := "\033[33m" // default is green color
-
-			miningString := ""
 
 			if mining {
 				miningSpeed := float64(c.counter-lastCounter) / (float64(uint64(time.Since(lastCounterTime))) / 1000000000.0)
@@ -108,9 +124,14 @@ func (c *Client) refreshConsole() {
 				testnetString = "\033[31m TESTNET"
 			}
 
-			c.console.SetPrompt(fmt.Sprintf("\033[1m\033[32mDERO Miner: \033[0m"+color+"Shares %d Rejected %d \033[32m%s>%s>>\033[0m ", c.GetTotalShares(), c.GetRejectedShares(), miningString, testnetString))
-			c.console.Refresh()
+			c.setPrompt(color, miningString, testnetString)
+			lastUpdate = time.Now()
 		}
 		time.Sleep(1 * time.Second)
 	}
+}
+
+func (c *Client) setPrompt(color, miningString, testnetString string) {
+	c.console.SetPrompt(fmt.Sprintf("\033[1m\033[32mDERO Miner: \033[0m"+color+"Shares %d Rejected %d \033[32m%s>%s>>\033[0m ", c.GetTotalShares(), c.GetRejectedShares(), miningString, testnetString))
+	c.console.Refresh()
 }

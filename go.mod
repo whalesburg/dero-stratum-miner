@@ -7,6 +7,7 @@ require (
 	github.com/deroproject/derohe v0.0.0-20220610090545-ec5da1c381a9
 	github.com/go-logr/logr v1.2.3
 	github.com/go-logr/zapr v1.2.3
+	github.com/jon4hz/hashconv v1.0.0
 	github.com/jpillora/backoff v1.0.0
 	github.com/muesli/coral v1.0.0
 	github.com/muesli/mango-coral v1.0.1
@@ -29,7 +30,6 @@ require (
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.4.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
-	github.com/jon4hz/hashconv v1.0.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.0.4 // indirect
 	github.com/minio/sha256-simd v1.0.0 // indirect
 	github.com/muesli/mango v0.1.0 // indirect
