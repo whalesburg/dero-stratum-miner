@@ -80,20 +80,21 @@ func (c *Client) refreshConsole() {
 	lastCounter := uint64(0)
 	lastCounterTime := time.Now()
 
-	var mining bool
-	lastUpdate := time.Now()
+	var (
+		lastUpdate = time.Now()
+		mining     bool
+
+		miningString string
+		heightString string
+		diffString   string
+	)
+
 	for {
 		select {
 		case <-c.ctx.Done():
 			return
 		default:
 		}
-
-		var (
-			miningString string
-			heightString string
-			diffString   string
-		)
 
 		// we assume that the miner stopped if the conolse wasn't updated within the last five seconds.
 		if time.Since(lastUpdate) > time.Second*5 {
@@ -113,7 +114,7 @@ func (c *Client) refreshConsole() {
 		// only update prompt if needed
 		if lastCounter != c.counter {
 			if mining {
-				heightString += fmt.Sprintf("\033[33mHeight %.0f", c.job.Height)
+				heightString = fmt.Sprintf("\033[33mHeight %.0f", c.job.Height)
 
 				switch {
 				case c.job.Difficulty > 1000000000:
