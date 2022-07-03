@@ -65,6 +65,7 @@ type Client struct {
 
 type logFnOptions struct {
 	Debug func(string)
+	Info  func(string)
 	Error func(error, string)
 }
 
@@ -82,6 +83,7 @@ func New(url string, opts ...Opts) *Client {
 		submittedJobIds:         make(map[int]struct{}),
 		LogFn: logFnOptions{
 			Debug: func(string) {},
+			Info:  func(string) {},
 			Error: func(error, string) {},
 		},
 	}
@@ -175,7 +177,7 @@ func (c *Client) dial(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	c.LogFn.Debug("successfully connected to pool: " + c.url)
+	c.LogFn.Info("successfully connected to pool: " + c.url)
 	c.reader = bufio.NewReader(c.conn)
 
 	if er := c.authorize(); er != nil {
@@ -313,11 +315,11 @@ func (c *Client) handleMessages() {
 						delete(c.submittedJobIds, id)
 						c.acceptedShares++
 						c.submittedShares++
-						c.LogFn.Debug("accepted share")
+						c.LogFn.Info("accepted share")
 					} else {
 						delete(c.submittedJobIds, id)
 						c.submittedShares++
-						c.LogFn.Debug("rejected share")
+						c.LogFn.Info("rejected share")
 					}
 				} else {
 					statusIntf, ok := response.Result.(map[string]any)
