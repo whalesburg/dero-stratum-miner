@@ -27,6 +27,7 @@ import (
 var reportHashrateInterval = time.Second * 30
 
 type Client struct {
+	counter uint64 // Must be the first field. Otherwise atomic operations panic on arm7
 	ctx     context.Context
 	cancel  context.CancelFunc
 	config  *config.Miner
@@ -38,7 +39,6 @@ type Client struct {
 	job        *stratum.Job
 	jobCounter int64
 	iterations int
-	counter    uint64
 	hashrate   uint64
 
 	shareCounter    uint64
