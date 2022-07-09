@@ -144,7 +144,7 @@ func (c *Client) mineblock(tid int) {
 
 	rand.Read(randomBuf[:]) //#nosec G404
 
-	time.Sleep(1 * time.Second)
+	time.Sleep(time.Millisecond * 500)
 
 	nonceBuf := work[block.MINIBLOCK_SIZE-5:] //since slices are linked, it modifies parent
 	runtime.LockOSThread()
@@ -160,14 +160,14 @@ func (c *Client) mineblock(tid int) {
 		localJobCounter = c.jobCounter
 		c.mu.RUnlock()
 		if myjob == nil {
-			time.Sleep(time.Second)
+			time.Sleep(time.Millisecond * 500)
 			continue
 		}
 
 		n, err := hex.Decode(work[:], []byte(myjob.Blob))
 		if err != nil || n != block.MINIBLOCK_SIZE {
 			c.logger.Error(err, "Blockwork could not be decoded successfully", "blockwork", myjob.Blob, "n", n, "job", myjob)
-			time.Sleep(time.Second)
+			time.Sleep(time.Millisecond * 500)
 			continue
 		}
 
@@ -177,11 +177,11 @@ func (c *Client) mineblock(tid int) {
 
 		if work[0]&0xf != 1 { // check  version
 			c.logger.Error(nil, "Unknown version, please check for updates", "version", work[0]&0x1f)
-			time.Sleep(time.Second)
+			time.Sleep(time.Millisecond * 500)
 			continue
 		}
 
-		for localJobCounter == c.jobCounter { // update job when it comes, expected rate 1 per second
+		for localJobCounter == c.jobCounter { // update job when it comes, expected rate 2 per second
 			if !c.stratum.IsConnected() {
 				time.Sleep(time.Millisecond * 500)
 				continue
