@@ -9,7 +9,7 @@ import (
 
 func (c *Client) setLogger(logger logr.Logger) error {
 	c.logger = logger.WithName("miner")
-	c.logger.Info("DERO Stargate HE AstroBWT stratum miner by whalesburg.com and dero.io")
+	c.logger.Info("DERO Stargate HE AstroBWT stratum miner")
 	c.logger.Info("", "OS", runtime.GOOS, "ARCH", runtime.GOARCH, "GOMAXPROCS", runtime.GOMAXPROCS(0))
 	c.logger.Info("", "Version", version.Version)
 
