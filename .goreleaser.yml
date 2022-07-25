@@ -73,7 +73,7 @@ nfpms:
     vendor: stratumfarm
     homepage: https://stratum.farm
     maintainer: stratumfarm <pool@stratum.farm>
-    description: a cli tool to fetch information from a dero rpc node
+    description: Dero Stratum Miner
     license: MIT
     formats:
       - apk
