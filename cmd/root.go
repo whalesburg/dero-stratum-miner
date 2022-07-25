@@ -48,7 +48,7 @@ func init() {
 	rootCmd.Flags().Int8Var(&cfg.Logger.FLogLevel, "file-log-level", 0, "file log level")
 
 	rootCmd.Flags().StringVar(&cfg.API.Listen, "api-listen", ":8080", "address to listen for API requests")
-	rootCmd.Flags().BoolVar(&cfg.API.Disabled, "api-disabled", false, "disable the API server")
+	rootCmd.Flags().BoolVar(&cfg.API.Enabled, "api-enabled", false, "enable the API server")
 }
 
 func Execute() error {
@@ -123,7 +123,7 @@ func rootHandler(cmd *coral.Command, args []string) error {
 		}
 	}()
 
-	if !cfg.API.Disabled {
+	if cfg.API.Enabled {
 		api := api.New(ctx, m, cfg.API, logger)
 		defer api.Close()
 		go func() {
