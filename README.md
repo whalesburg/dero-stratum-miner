@@ -98,7 +98,7 @@ $ ./dero-stratum-miner -w $YOUR_WALLET
 ### Disable TLS
 By default the dero-stratum-miner tries to connect over a tls encrypted port. This can be disabled using the following command:
 ```
-$ ./dero-stratum-miner -w $YOUR_WALLET -r stratum://pool.whalesburg.com:tbd
+$ ./dero-stratum-miner -w $YOUR_WALLET -r stratum://pool.whalesburg.com:4300
 ```
 
 ### Enabled the api
@@ -125,7 +125,7 @@ Flags:
       --api-enabled                 enable the API server
       --api-listen string           address to listen for API requests (default ":8080")
       --console-log-level int8      console log level
-  -r, --daemon-rpc-address string   stratum pool url (default "pool.whalesburg.com:tbd")
+  -r, --daemon-rpc-address string   stratum pool url (default "pool.whalesburg.com:4300")
       --debug                       enable debug mode
       --file-log-level int8         file log level
   -h, --help                        help for dero-stratum-miner
