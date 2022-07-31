@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/stratumfarm/dero-stratum-miner/cmd"
+	"github.com/whalesburg/dero-stratum-miner/cmd"
 )
 
 func main() {

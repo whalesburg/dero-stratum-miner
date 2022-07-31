@@ -12,7 +12,7 @@ builds:
       - CGO_ENABLED=0
     main: ./main.go
     binary: dero-stratum-miner
-    ldflags: -s -w -X github.com/stratumfarm/dero-stratum-miner/internal/version.Version={{ .Version }} -X github.com/stratumfarm/dero-stratum-miner/internal/version.Commit={{ .Commit }} -X github.com/stratumfarm/dero-stratum-miner/internal/version.Date={{ .Date }} -X github.com/stratumfarm/dero-stratum-miner/internal/version.BuiltBy=goreleaser
+    ldflags: -s -w -X github.com/whalesburg/dero-stratum-miner/internal/version.Version={{ .Version }} -X github.com/whalesburg/dero-stratum-miner/internal/version.Commit={{ .Commit }} -X github.com/whalesburg/dero-stratum-miner/internal/version.Date={{ .Date }} -X github.com/whalesburg/dero-stratum-miner/internal/version.BuiltBy=goreleaser
     flags:
       - -trimpath
     goos:
@@ -37,7 +37,7 @@ builds:
       - CGO_ENABLED=0
     main: ./main.go
     binary: dero-stratum-miner
-    ldflags: -s -w -X github.com/stratumfarm/dero-stratum-miner/internal/version.Version={{ .Version }} -X github.com/stratumfarm/dero-stratum-miner/internal/version.Commit={{ .Commit }} -X github.com/stratumfarm/dero-stratum-miner/internal/version.Date={{ .Date }} -X github.com/stratumfarm/dero-stratum-miner/internal/version.BuiltBy=goreleas
+    ldflags: -s -w -X github.com/whalesburg/dero-stratum-miner/internal/version.Version={{ .Version }} -X github.com/whalesburg/dero-stratum-miner/internal/version.Commit={{ .Commit }} -X github.com/whalesburg/dero-stratum-miner/internal/version.Date={{ .Date }} -X github.com/whalesburg/dero-stratum-miner/internal/version.BuiltBy=goreleas
     flags: 
       - -trimpath
     goos:
@@ -70,10 +70,10 @@ checksum:
 nfpms:
   - 
     file_name_template: "dero-stratum-miner-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}-{{ .Mips }}{{ end }}"
-    vendor: stratumfarm
+    vendor: whalesburg
     homepage: https://stratum.farm
-    maintainer: stratumfarm <pool@stratum.farm>
-    description: a cli tool to fetch information from a dero rpc node
+    maintainer: whalesburg <pool@stratum.farm>
+    description: Dero Stratum Miner
     license: MIT
     formats:
       - apk

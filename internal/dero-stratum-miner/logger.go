@@ -4,7 +4,7 @@ import (
 	"runtime"
 
 	"github.com/go-logr/logr"
-	"github.com/stratumfarm/dero-stratum-miner/internal/version"
+	"github.com/whalesburg/dero-stratum-miner/internal/version"
 )
 
 func (c *Client) setLogger(logger logr.Logger) error {
