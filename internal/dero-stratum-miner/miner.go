@@ -15,13 +15,13 @@ import (
 	"time"
 
 	"github.com/chzyer/readline"
+	"github.com/deroproject/derohe/astrobwt/astrobwtv3"
+	"github.com/deroproject/derohe/block"
 	"github.com/go-logr/logr"
 	"github.com/jpillora/backoff"
-	"github.com/stratumfarm/dero-stratum-miner/internal/config"
-	"github.com/stratumfarm/dero-stratum-miner/internal/stratum"
-	"github.com/stratumfarm/derohe/astrobwt/astrobwtv3"
-	"github.com/stratumfarm/derohe/block"
 	"github.com/teivah/broadcast"
+	"github.com/whalesburg/dero-stratum-miner/internal/config"
+	"github.com/whalesburg/dero-stratum-miner/internal/stratum"
 )
 
 var reportHashrateInterval = time.Second * 30

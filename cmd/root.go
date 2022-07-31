@@ -16,13 +16,13 @@ import (
 	"github.com/muesli/coral"
 	mcoral "github.com/muesli/mango-coral"
 	"github.com/muesli/roff"
-	"github.com/stratumfarm/dero-stratum-miner/internal/api"
-	"github.com/stratumfarm/dero-stratum-miner/internal/config"
-	"github.com/stratumfarm/dero-stratum-miner/internal/console"
-	miner "github.com/stratumfarm/dero-stratum-miner/internal/dero-stratum-miner"
-	"github.com/stratumfarm/dero-stratum-miner/internal/logging"
-	"github.com/stratumfarm/dero-stratum-miner/internal/stratum"
-	"github.com/stratumfarm/dero-stratum-miner/internal/version"
+	"github.com/whalesburg/dero-stratum-miner/internal/api"
+	"github.com/whalesburg/dero-stratum-miner/internal/config"
+	"github.com/whalesburg/dero-stratum-miner/internal/console"
+	miner "github.com/whalesburg/dero-stratum-miner/internal/dero-stratum-miner"
+	"github.com/whalesburg/dero-stratum-miner/internal/logging"
+	"github.com/whalesburg/dero-stratum-miner/internal/stratum"
+	"github.com/whalesburg/dero-stratum-miner/internal/version"
 )
 
 var cfg = config.NewEmpty()

@@ -11,7 +11,7 @@ import (
 
 	"github.com/chzyer/readline"
 	"github.com/jon4hz/hashconv"
-	"github.com/stratumfarm/dero-stratum-miner/internal/version"
+	"github.com/whalesburg/dero-stratum-miner/internal/version"
 )
 
 func usage(w io.Writer) {

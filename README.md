@@ -1,6 +1,6 @@
 # dero-stratum-miner
-[![lint](https://github.com/stratumfarm/dero-stratum-miner/actions/workflows/lint.yml/badge.svg)](https://github.com/stratumfarm/dero-stratum-miner/actions/workflows/lint.yml)
-[![goreleaser](https://github.com/stratumfarm/dero-stratum-miner/actions/workflows/release.yml/badge.svg)](https://github.com/stratumfarm/dero-stratum-miner/actions/workflows/release.yml)
+[![lint](https://github.com/whalesburg/dero-stratum-miner/actions/workflows/lint.yml/badge.svg)](https://github.com/whalesburg/dero-stratum-miner/actions/workflows/lint.yml)
+[![goreleaser](https://github.com/whalesburg/dero-stratum-miner/actions/workflows/release.yml/badge.svg)](https://github.com/whalesburg/dero-stratum-miner/actions/workflows/release.yml)
 [![Discord](https://img.shields.io/discord/955758990682390568?logo=discord&logoColor=white&labelColor=5865F2&color=gray)](https://discord.gg/GSacSHyEBP)
 [![telegram chat](https://img.shields.io/badge/telegram-chat-gray?labelColor=0088cc)](https://t.me/+KmaphwptVMQ2ZDBk)
 
@@ -10,7 +10,7 @@ dero-stratum-miner adds support for mining to a stratum pool using the official 
 
 
 ## 📦 Installation
-The latest release can always be found [here](https://github.com/stratumfarm/dero-stratum-miner/releases).
+The latest release can always be found [here](https://github.com/whalesburg/dero-stratum-miner/releases).
 
 
 ### Linux
@@ -18,7 +18,7 @@ The latest release can always be found [here](https://github.com/stratumfarm/der
 #### Manual installation
 1. Open a terminal
 2. Download the latest release  
-`curl -sLJO "https://github.com/stratumfarm/dero-stratum-miner/releases/download/v1.0.0/dero-stratum-miner-v1.0.0-linux-amd64.tar.gz"`
+`curl -sLJO "https://github.com/whalesburg/dero-stratum-miner/releases/download/v1.0.0/dero-stratum-miner-v1.0.0-linux-amd64.tar.gz"`
 
 3. Unpack the archive  
 `tar xavf dero-stratum-miner-v1.0.0-linux-amd64.tar.gz`
@@ -76,7 +76,7 @@ The miner can be started by using the command `./dero-stratum-miner`
 `pkg update`
 
 4. Download the latest release  
-`curl -sLJO "https://github.com/stratumfarm/dero-stratum-miner/releases/download/v1.0.0/dero-stratum-miner-v1.0.0-linux-armv7.tar.gz"`
+`curl -sLJO "https://github.com/whalesburg/dero-stratum-miner/releases/download/v1.0.0/dero-stratum-miner-v1.0.0-linux-armv7.tar.gz"`
 
 5. Unpack the archive  
 `tar xavf dero-stratum-miner-v1.0.0-linux-amd64.tar.gz`
@@ -138,11 +138,7 @@ Use "dero-stratum-miner [command] --help" for more information about a command.
 
 
 ## 🆘 Support 
-If you want to report a bug, please [open an issue](https://github.com/stratumfarm/dero-stratum-miner/issues/new/choose) on github.  
+If you want to report a bug, please [open an issue](https://github.com/whalesburg/dero-stratum-miner/issues/new/choose) on github.  
 For general support please join our telegram group or discord server.
 - [Discord](https://discord.gg/GSacSHyEBP)
 - [Telegram](https://t.me/+KmaphwptVMQ2ZDBk)
-
-
-## 📜 Licensing
-_TODO_

@@ -1,4 +1,4 @@
-module github.com/stratumfarm/dero-stratum-miner
+module github.com/whalesburg/dero-stratum-miner
 
 go 1.18
 
@@ -12,7 +12,6 @@ require (
 	github.com/muesli/coral v1.0.0
 	github.com/muesli/mango-coral v1.0.1
 	github.com/muesli/roff v0.1.0
-	github.com/stratumfarm/derohe v0.0.0-20220610114855-d6de66e1986c
 	github.com/stretchr/testify v1.7.2
 	github.com/teivah/broadcast v0.1.0
 	go.neonxp.dev/jsonrpc2 v1.2.0

@@ -20,7 +20,7 @@ package miner
 import (
 	"math/big"
 
-	"github.com/stratumfarm/derohe/cryptography/crypto"
+	"github.com/deroproject/derohe/cryptography/crypto"
 )
 
 var (
