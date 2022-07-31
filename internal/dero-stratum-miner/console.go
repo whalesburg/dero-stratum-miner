@@ -15,13 +15,12 @@ import (
 )
 
 func usage(w io.Writer) {
-	io.WriteString(w, "commands:\n")                                          // nolint: errcheck
-	io.WriteString(w, "\t\033[1mhelp\033[0m\t\tthis help\n")                  // nolint: errcheck
-	io.WriteString(w, "\t\033[1mstatus\033[0m\t\tShow general information\n") // nolint: errcheck
-	io.WriteString(w, "\t\033[1mbye\033[0m\t\tQuit the miner\n")              // nolint: errcheck
-	io.WriteString(w, "\t\033[1mversion\033[0m\t\tShow version\n")            // nolint: errcheck
-	io.WriteString(w, "\t\033[1mexit\033[0m\t\tQuit the miner\n")             // nolint: errcheck
-	io.WriteString(w, "\t\033[1mquit\033[0m\t\tQuit the miner\n")             // nolint: errcheck
+	io.WriteString(w, "commands:\n")                               // nolint: errcheck
+	io.WriteString(w, "\t\033[1mhelp\033[0m\t\tthis help\n")       // nolint: errcheck
+	io.WriteString(w, "\t\033[1mbye\033[0m\t\tQuit the miner\n")   // nolint: errcheck
+	io.WriteString(w, "\t\033[1mversion\033[0m\t\tShow version\n") // nolint: errcheck
+	io.WriteString(w, "\t\033[1mexit\033[0m\t\tQuit the miner\n")  // nolint: errcheck
+	io.WriteString(w, "\t\033[1mquit\033[0m\t\tQuit the miner\n")  // nolint: errcheck
 }
 
 func (c *Client) startConsole() {
