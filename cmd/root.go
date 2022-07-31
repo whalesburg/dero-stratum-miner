@@ -40,7 +40,7 @@ func init() {
 	rootCmd.MarkFlagRequired("wallet-address") // nolint: errcheck
 
 	rootCmd.Flags().BoolVarP(&cfg.Miner.Testnet, "testnet", "t", false, "use testnet")
-	rootCmd.Flags().StringVarP(&cfg.Miner.PoolURL, "daemon-rpc-address", "r", "pool.whalesburg.com:tbd", "stratum pool url")
+	rootCmd.Flags().StringVarP(&cfg.Miner.PoolURL, "daemon-rpc-address", "r", "pool.whalesburg.com:4300", "stratum pool url")
 	rootCmd.Flags().IntVarP(&cfg.Miner.Threads, "mining-threads", "m", runtime.GOMAXPROCS(0), "number of threads to use")
 
 	rootCmd.Flags().BoolVar(&cfg.Logger.Debug, "debug", false, "enable debug mode")
