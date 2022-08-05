@@ -98,10 +98,10 @@ func (c *Client) refreshConsole() {
 		// we assume that the miner stopped if the conolse wasn't updated within the last five seconds.
 		if time.Since(lastUpdate) > time.Second*5 {
 			if mining {
-				miningString = "\033[31mNOT MINING"
+				miningString = "\033[31mNot Mining"
 				testnetString := ""
 				if c.config.Testnet {
-					testnetString = "\033[31m TESTNET"
+					testnetString = "\033[31m Testnet"
 				}
 				c.setPrompt(heightString, diffString, miningString, testnetString)
 				mining = false
@@ -130,12 +130,12 @@ func (c *Client) refreshConsole() {
 				c.hashrate = uint64(miningSpeed)
 				lastCounter = c.counter
 				lastCounterTime = time.Now()
-				miningString = fmt.Sprintf("MINING @ %s/s", hashconv.Format(int64(miningSpeed)))
+				miningString = fmt.Sprintf("Mining @ %s/s", hashconv.Format(int64(miningSpeed)))
 			}
 
 			testnetString := ""
 			if c.config.Testnet {
-				testnetString = "\033[31m TESTNET"
+				testnetString = "\033[31m Testnet"
 			}
 
 			c.setPrompt(heightString, diffString, miningString, testnetString)
@@ -146,6 +146,6 @@ func (c *Client) refreshConsole() {
 }
 
 func (c *Client) setPrompt(heightString, diffString, miningString, testnetString string) {
-	c.console.SetPrompt(fmt.Sprintf("\033[1m\033[32mDERO Miner: \033[0m%s %s \033[33mShares %d Rejected %d \033[32m%s>%s>>\033[0m ", heightString, diffString, c.GetTotalShares(), c.GetRejectedShares(), miningString, testnetString))
+	c.console.SetPrompt(fmt.Sprintf("\033[1m\033[32mDero-Stratum-Miner: \033[0m%s %s \033[33mShares %d Rejected %d \033[32m%s>%s>>\033[0m ", heightString, diffString, c.GetTotalShares(), c.GetRejectedShares(), miningString, testnetString))
 	c.console.Refresh()
 }

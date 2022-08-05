@@ -51,9 +51,6 @@ func New(console, logfile io.Writer, cfg *config.Logger) logr.Logger {
 
 	zcore := zap.New(core, zap.AddCaller()) // add caller info to every record which is then trimmed from console
 	return zapr.NewLogger(zcore)
-	//Logger = zapr.NewLoggerWithOptions(zcore,zapr.LogInfoLevel("V")) // if you need verbosity levels
-
-	// remember -1 is debug, 0 is info
 }
 
 // remove caller information from console

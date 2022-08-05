@@ -1,6 +1,7 @@
 package miner
 
 import (
+	"fmt"
 	"runtime"
 
 	"github.com/go-logr/logr"
@@ -9,14 +10,16 @@ import (
 
 func (c *Client) setLogger(logger logr.Logger) error {
 	c.logger = logger.WithName("miner")
-	c.logger.Info("DERO Stargate HE AstroBWT stratum miner")
-	c.logger.Info("", "OS", runtime.GOOS, "ARCH", runtime.GOARCH, "GOMAXPROCS", runtime.GOMAXPROCS(0))
-	c.logger.Info("", "Version", version.Version)
+	c.logger.Info("AstroBWT Stratum Miner")
+	c.logger.Info("Version: " + version.Version)
+	c.logger.Info("OS: " + runtime.GOOS)
+	c.logger.Info("Arch: " + runtime.GOARCH)
+	c.logger.Info(fmt.Sprintf("Threads: %d (max: %d)", c.config.Threads, runtime.GOMAXPROCS(0)))
 
 	name := "mainnet"
 	if c.config.Testnet {
 		name = "testnet"
 	}
-	c.logger.V(0).Info("", "MODE", name)
+	c.logger.Info("Network: " + name)
 	return nil
 }

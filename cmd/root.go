@@ -143,6 +143,7 @@ func rootHandler(cmd *coral.Command, args []string) error {
 }
 
 func newStratumClient(ctx context.Context, url, addr string, logger logr.Logger) *stratum.Client {
+	logger = logger.WithName("stratum")
 	var useTLS bool
 	if strings.HasPrefix(url, "stratum+tls://") || strings.HasPrefix(url, "stratum+ssl://") {
 		useTLS = true

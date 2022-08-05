@@ -9,8 +9,8 @@ import (
 
 func New() (*readline.Instance, error) {
 	l, err := readline.NewEx(&readline.Config{
-		Prompt:          "\033[92mDERO Miner:\033[32m>>>\033[0m ",
-		HistoryFile:     filepath.Join(os.TempDir(), "dero_miner_readline.tmp"),
+		Prompt:          "\033[92mDero-Stratum-Miner:\033[32m>>>\033[0m ",
+		HistoryFile:     filepath.Join(os.TempDir(), "dero_stratum_miner_history.tmp"),
 		AutoComplete:    completer,
 		InterruptPrompt: "^C",
 		EOFPrompt:       "exit",

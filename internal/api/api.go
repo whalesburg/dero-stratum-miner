@@ -28,7 +28,7 @@ type Server struct {
 func New(ctx context.Context, m *miner.Client, cfg *config.API, logr logr.Logger) *Server {
 	ctx, cancel := context.WithCancel(ctx)
 	r := rpc.New(
-		rpc.WithLogger(&logger{logr}),
+		rpc.WithLogger(&logger{logr.WithName("api")}),
 		rpc.WithTransport(&transport.TCP{Bind: cfg.Listen, Parallel: true}),
 	)
 	s := &Server{
