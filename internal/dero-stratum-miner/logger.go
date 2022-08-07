@@ -8,7 +8,7 @@ import (
 	"github.com/whalesburg/dero-stratum-miner/internal/version"
 )
 
-func (c *Client) setLogger(logger logr.Logger) error {
+func (c *Client) setLogger(logger logr.Logger) {
 	c.logger = logger.WithName("miner")
 	c.logger.Info("AstroBWT Stratum Miner")
 	c.logger.Info("Version: " + version.Version)
@@ -21,5 +21,4 @@ func (c *Client) setLogger(logger logr.Logger) error {
 		name = "testnet"
 	}
 	c.logger.Info("Network: " + name)
-	return nil
 }

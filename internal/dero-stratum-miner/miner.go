@@ -54,9 +54,7 @@ func New(ctx context.Context, cancel context.CancelFunc, config *config.Miner, s
 		iterations: 100,
 		console:    console,
 	}
-	if err := c.setLogger(logger); err != nil {
-		return nil, err
-	}
+	c.setLogger(logger)
 	return c, nil
 }
 
