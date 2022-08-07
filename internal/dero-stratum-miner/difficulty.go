@@ -54,17 +54,6 @@ func HashToBig(buf crypto.Hash) *big.Int {
 	return new(big.Int).SetBytes(buf[:])
 }
 
-// this function calculates the difficulty in big num form
-func ConvertDifficultyToBig(difficultyi uint64) *big.Int {
-	if difficultyi == 0 {
-		panic("difficulty can never be zero")
-	}
-	// (1 << 256) / (difficultyNum )
-	difficulty := new(big.Int).SetUint64(difficultyi)
-	denominator := new(big.Int).Add(difficulty, bigZero) // above 2 lines can be merged
-	return new(big.Int).Div(oneLsh256, denominator)
-}
-
 func ConvertIntegerDifficultyToBig(difficultyi *big.Int) *big.Int {
 	if difficultyi.Cmp(bigZero) == 0 { // if work_pow is less than difficulty
 		panic("difficulty can never be zero")
