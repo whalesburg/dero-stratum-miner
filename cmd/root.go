@@ -49,6 +49,7 @@ func init() {
 
 	rootCmd.Flags().StringVar(&cfg.API.Listen, "api-listen", ":8080", "address to listen for API requests")
 	rootCmd.Flags().BoolVar(&cfg.API.Enabled, "api-enabled", false, "enable the API server")
+	rootCmd.Flags().StringVar(&cfg.API.Transport, "api-transport", "tcp", "transport to use for API requests")
 }
 
 func Execute() error {
@@ -124,7 +125,10 @@ func rootHandler(cmd *coral.Command, args []string) error {
 	}()
 
 	if cfg.API.Enabled {
-		api := api.New(ctx, m, cfg.API, logger)
+		api, err := api.New(ctx, m, cfg.API, logger)
+		if err != nil {
+			log.Fatalln(err)
+		}
 		defer api.Close()
 		go func() {
 			if err := api.Serve(); err != nil {
