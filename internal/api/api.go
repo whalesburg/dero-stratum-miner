@@ -25,11 +25,21 @@ type Server struct {
 	m         *miner.Client
 }
 
-func New(ctx context.Context, m *miner.Client, cfg *config.API, logr logr.Logger) *Server {
+func New(ctx context.Context, m *miner.Client, cfg *config.API, logr logr.Logger) (*Server, error) {
+	var tsp transport.Transport
+	switch cfg.Transport {
+	case "tcp":
+		tsp = &transport.TCP{Bind: cfg.Listen, Parallel: true}
+	case "http":
+		tsp = &transport.HTTP{Bind: cfg.Listen, Parallel: true, CORSOrigin: "*"}
+	default:
+		return nil, fmt.Errorf("unknown transport %s", cfg.Transport)
+	}
+
 	ctx, cancel := context.WithCancel(ctx)
 	r := rpc.New(
 		rpc.WithLogger(&logger{logr.WithName("api")}),
-		rpc.WithTransport(&transport.TCP{Bind: cfg.Listen, Parallel: true}),
+		rpc.WithTransport(tsp),
 	)
 	s := &Server{
 		ctx:    ctx,
@@ -39,7 +49,7 @@ func New(ctx context.Context, m *miner.Client, cfg *config.API, logr logr.Logger
 		m:      m,
 	}
 	s.r.Register("miner_getstat1", rpc.HS(s.MinerStats))
-	return s
+	return s, nil
 }
 
 func (s *Server) Serve() error {
