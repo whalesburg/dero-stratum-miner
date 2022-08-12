@@ -76,13 +76,13 @@ The miner can be started by using the command `./dero-stratum-miner`
 `pkg update`
 
 4. Download the latest release  
-`curl -sLJO "https://github.com/whalesburg/dero-stratum-miner/releases/download/v1.0.0/dero-stratum-miner-v1.0.0-linux-armv7.tar.gz"`
+`curl -sLJO "https://github.com/whalesburg/dero-stratum-miner/releases/download/v1.0.0/dero-stratum-miner-v1.0.0-linux-arm64.tar.gz"`
 
 5. Unpack the archive  
-`tar xavf dero-stratum-miner-v1.0.0-linux-amd64.tar.gz`
+`tar xavf dero-stratum-miner-v1.0.0-linux-arm64.tar.gz`
 
 6. Make the file executable  
-`cd dero-stratum-miner-v1.0.0-linux-armv7 && chmod u+x dero-stratum-miner`
+`cd dero-stratum-miner-v1.0.0-linux-arm64 && chmod u+x dero-stratum-miner`
 
 The miner can be started by using the command `./dero-stratum-miner`
 
