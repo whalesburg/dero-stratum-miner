@@ -1,9 +1,9 @@
 ---
-
 before:
   hooks:
     - ./scripts/completions.sh
     - ./scripts/manpages.sh
+    - ./scripts/hiveos.sh {{ .Version }}
 
 builds:
   - 
@@ -45,8 +45,22 @@ builds:
     goarch:
       - amd64
       - "386"
+  - 
+    id: hiveos
+    env:
+      - CGO_ENABLED=0
+    main: ./main.go
+    binary: dero-stratum-miner
+    ldflags: -s -w -X github.com/whalesburg/dero-stratum-miner/internal/version.Version={{ .Version }} -X github.com/whalesburg/dero-stratum-miner/internal/version.Commit={{ .Commit }} -X github.com/whalesburg/dero-stratum-miner/internal/version.Date={{ .Date }} -X github.com/whalesburg/dero-stratum-miner/internal/version.BuiltBy=goreleaser
+    flags:
+      - -trimpath
+    goos:
+      - linux
+    goarch:
+      - amd64
 
 archives:
+  # default
   - 
     name_template: "dero-stratum-miner-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}-{{ .Mips }}{{ end }}"
     builds:
@@ -63,15 +77,31 @@ archives:
       - CHANGELOG*
       - manpages/
       - completions
+  # hiveos
+  -
+    id: hiveos
+    name_template: "dero-stratum-miner-{{ .Version }}.hiveOS"
+    builds:
+      - hiveos
+    format: tar.gz
+    wrap_in_directory: dero-stratum-miner
+    files:
+      - LICENSE*
+      - README*
+      - CHANGELOG*
+      - src: 'hiveos/*'
+        strip_parent: true
 
 checksum:
   name_template: checksums.txt
 
 nfpms:
   - 
+    builds:
+      - default
     file_name_template: "dero-stratum-miner-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}-{{ .Mips }}{{ end }}"
     vendor: whalesburg
-    homepage: https://stratum.farm
+    homepage: https://whalesburg.com
     maintainer: whalesburg <pool@stratum.farm>
     description: Dero Stratum Miner
     license: MIT
