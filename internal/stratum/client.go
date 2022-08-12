@@ -96,11 +96,7 @@ func New(url string, opts ...Opts) *Client {
 
 func (c *Client) CloseAndReconnect() {
 	c.Close(false)
-	go func() {
-		if err := c.reconnect(); err != nil {
-			c.LogFn.Error(err, "connection error")
-		}
-	}()
+	go c.reconnect()
 }
 
 func (c *Client) Close(forever bool) {
@@ -183,9 +179,9 @@ func (c *Client) dial() error {
 	return nil
 }
 
-func (c *Client) reconnect() error {
+func (c *Client) reconnect() {
 	if !c.setStateIfNot(connectingState, connectingState|connectedState|closedForeverState) {
-		return nil
+		return
 	}
 
 	b := c.makeBackoff()
@@ -194,7 +190,7 @@ func (c *Client) reconnect() error {
 	for {
 		err := c.dial()
 		if err == nil {
-			return nil
+			return
 		}
 
 		waitDuration := b.Duration()
