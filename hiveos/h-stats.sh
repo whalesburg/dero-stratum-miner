@@ -17,7 +17,7 @@ else
     local acc=`echo $shares | awk -F";" '/1/ {print $2}'`
     local rej=`echo $shares | awk -F";" '/1/ {print $3}'`
     local bus_numbers=0
-    local algo="AstroBWTv3"
+    local algo="astrobwt"
     stats=$(jq --argjson hs "$hs" --arg hs_units "$hs_units" --argjson temp "$temp" --argjson fan "$fan" --argjson uptime "$uptime" --arg ver "$ver" --arg acc "$acc" --arg rej "$rej" --argjson bus_numbers "$bus_numbers" --arg algo "AstroBWTv3" --arg total_khs "$khs" '{hs: [$hs] , $hs_units, temp:[$temp], $fan, $uptime, $ver, ar: [ $acc, $rej ], $bus_numbers, $algo, $total_khs}' <<< "$stats_raw")
 fi
 

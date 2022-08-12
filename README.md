@@ -97,7 +97,7 @@ Option                            | Value
 ----------------------------------|------------------------------------------------------------------------------------------------------------------
 Miner name                        | dero-stratum-miner
 Installation URL                  | https://github.com/whalesburg/dero-stratum-miner/releases/download/v0.1.0/dero-stratum-miner-0.1.0-hiveOS.tar.gz
-Hash algorithm                    | AstroBWTv3
+Hash algorithm                    | astrobwt
 Wallet and worker template        | %WAL%.%WORKER_NAME%
 Pool URL                          | pool.whalesburg.com:4300
 Extra config arguments (optional) | -m $THREAD_NUMBERS (limit the amount of threads used for mining)
