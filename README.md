@@ -76,15 +76,31 @@ The miner can be started by using the command `./dero-stratum-miner`
 `pkg update`
 
 4. Download the latest release  
-`curl -sLJO "https://github.com/whalesburg/dero-stratum-miner/releases/download/v1.0.0/dero-stratum-miner-v1.0.0-linux-armv7.tar.gz"`
+`curl -sLJO "https://github.com/whalesburg/dero-stratum-miner/releases/download/v1.0.0/dero-stratum-miner-v1.0.0-linux-arm64.tar.gz"`
 
 5. Unpack the archive  
-`tar xavf dero-stratum-miner-v1.0.0-linux-amd64.tar.gz`
+`tar xavf dero-stratum-miner-v1.0.0-linux-arm64.tar.gz`
 
 6. Make the file executable  
-`cd dero-stratum-miner-v1.0.0-linux-armv7 && chmod u+x dero-stratum-miner`
+`cd dero-stratum-miner-v1.0.0-linux-arm64 && chmod u+x dero-stratum-miner`
 
 The miner can be started by using the command `./dero-stratum-miner`
+
+
+### mmpOS
+`dero-stratum-miner` is natively integrated in mmpOS. Simply select "DERO stratum miner" when your miner profile and that's it!
+
+### HiveOS
+To use `dero-stratum-miner` on hiveOS, you have to create a [custom miner](https://hiveon.com/knowledge-base/getting_started/start_custom_miner/).  
+
+Option                            | Value
+----------------------------------|------------------------------------------------------------------------------------------------------------------
+Miner name                        | dero-stratum-miner
+Installation URL                  | https://github.com/whalesburg/dero-stratum-miner/releases/download/v0.1.0/dero-stratum-miner-0.1.0-hiveOS.tar.gz
+Hash algorithm                    | astrobwt
+Wallet and worker template        | %WAL%.%WORKER_NAME%
+Pool URL                          | pool.whalesburg.com:4300
+Extra config arguments (optional) | -m $THREAD_NUMBERS (limit the amount of threads used for mining)
 
 
 ## 🚀 Usage
