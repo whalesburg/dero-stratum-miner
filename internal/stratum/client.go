@@ -142,21 +142,17 @@ func (c *Client) NewResponseListener(buff int) *broadcast.Listener[*Response] {
 }
 
 func (c *Client) Dial() error {
-	return c.DialContext(context.Background())
-}
-
-func (c *Client) DialContext(ctx context.Context) error {
 	if !c.setStateIfNot(connectingState, connectingState|connectedState) {
 		return nil
 	}
 
-	if err := c.dial(ctx); err != nil {
+	if err := c.dial(); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) dial(ctx context.Context) error {
+func (c *Client) dial() error {
 	var err error
 	d := net.Dialer{KeepAlive: c.keepaliveTimeout}
 	c.mu.Lock()
@@ -196,7 +192,7 @@ func (c *Client) reconnect() error {
 	rand.Seed(time.Now().UTC().UnixNano())
 
 	for {
-		err := c.dial(context.Background())
+		err := c.dial()
 		if err == nil {
 			return nil
 		}
