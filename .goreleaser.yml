@@ -80,11 +80,11 @@ archives:
   # hiveos
   -
     id: hiveos
-    name_template: "dero-stratum-miner-v{{ .Version }}-hiveOS"
+    name_template: "dero-stratum-miner-{{ .Version }}.hiveOS"
     builds:
       - hiveos
     format: tar.gz
-    wrap_in_directory: true
+    wrap_in_directory: dero-stratum-miner
     files:
       - LICENSE*
       - README*
