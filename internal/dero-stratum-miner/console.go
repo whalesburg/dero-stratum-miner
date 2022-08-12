@@ -146,6 +146,9 @@ func (c *Client) refreshConsole() {
 }
 
 func (c *Client) setPrompt(heightString, diffString, miningString, testnetString string) {
+	if c.console == nil {
+		return
+	}
 	c.console.SetPrompt(fmt.Sprintf("\033[1m\033[32mDero-Stratum-Miner: \033[0m%s %s \033[33mShares %d Rejected %d \033[32m%s>%s>>\033[0m ", heightString, diffString, c.GetTotalShares(), c.GetRejectedShares(), miningString, testnetString))
 	c.console.Refresh()
 }
