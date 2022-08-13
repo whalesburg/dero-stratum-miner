@@ -7,10 +7,8 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/chzyer/readline"
-	"github.com/jon4hz/hashconv"
 	"github.com/whalesburg/dero-stratum-miner/internal/version"
 )
 
@@ -72,76 +70,6 @@ func (c *Client) startConsole() {
 		default:
 			fmt.Println("you said:", strconv.Quote(line))
 		}
-	}
-}
-
-func (c *Client) refreshConsole() {
-	lastCounter := uint64(0)
-	lastCounterTime := time.Now()
-
-	var (
-		lastUpdate = time.Now()
-		mining     bool
-
-		miningString string
-		heightString string
-		diffString   string
-	)
-
-	for {
-		select {
-		case <-c.ctx.Done():
-			return
-		default:
-		}
-
-		// we assume that the miner stopped if the conolse wasn't updated within the last five seconds.
-		if time.Since(lastUpdate) > time.Second*5 {
-			if mining {
-				miningString = "\033[31mNot Mining"
-				testnetString := ""
-				if c.config.Testnet {
-					testnetString = "\033[31m Testnet"
-				}
-				c.setPrompt(heightString, diffString, miningString, testnetString)
-				mining = false
-			}
-		} else {
-			mining = true
-		}
-
-		// only update prompt if needed
-		if lastCounter != c.counter {
-			if mining {
-				heightString = fmt.Sprintf("\033[33mHeight %.0f", c.job.Height)
-
-				switch {
-				case c.job.Difficulty > 1000000000:
-					diffString = fmt.Sprintf("\033[32mDiff %.1fG", float32(c.job.Difficulty)/1000000000.0)
-				case c.job.Difficulty > 1000000:
-					diffString = fmt.Sprintf("\033[32mDiff %.1fM", float32(c.job.Difficulty)/1000000.0)
-				case c.job.Difficulty > 1000:
-					diffString = fmt.Sprintf("\033[32mDiff %.1fK", float32(c.job.Difficulty)/1000.0)
-				case c.job.Difficulty > 0:
-					diffString = fmt.Sprintf("\033[32mDiff %d", c.job.Difficulty)
-				}
-
-				miningSpeed := float64(c.counter-lastCounter) / (float64(uint64(time.Since(lastCounterTime))) / 1000000000.0)
-				c.hashrate = uint64(miningSpeed)
-				lastCounter = c.counter
-				lastCounterTime = time.Now()
-				miningString = fmt.Sprintf("Mining @ %s/s", hashconv.Format(int64(miningSpeed)))
-			}
-
-			testnetString := ""
-			if c.config.Testnet {
-				testnetString = "\033[31m Testnet"
-			}
-
-			c.setPrompt(heightString, diffString, miningString, testnetString)
-			lastUpdate = time.Now()
-		}
-		time.Sleep(1 * time.Second)
 	}
 }
 

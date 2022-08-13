@@ -35,11 +35,15 @@ type Client struct {
 	console *readline.Instance
 	logger  logr.Logger
 
-	mu         sync.RWMutex
-	job        *stratum.Job
-	jobCounter int64
-	iterations int
-	hashrate   uint64
+	mu           sync.RWMutex
+	job          *stratum.Job
+	jobCounter   int64
+	iterations   int
+	hashrate     uint64
+	mining       bool
+	miningString string
+	diffString   string
+	heightString string
 
 	shareCounter    uint64
 	rejectedCounter uint64
@@ -74,9 +78,11 @@ func (c *Client) Start() error {
 		c.config.Threads = 255
 	}
 
-	if !c.config.NonInteractive {
-		go c.refreshConsole()
+	go c.gatherStats()
+	if c.config.NonInteractive {
+		go c.noniSummary()
 	}
+
 	go c.getwork()
 
 	for i := 0; i < c.config.Threads; i++ {
