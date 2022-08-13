@@ -30,6 +30,7 @@ type Client struct {
 	mu                      sync.RWMutex
 	id                      int
 	url                     string
+	agentName               string
 	username                string
 	password                string
 	readTimeout             time.Duration

@@ -184,6 +184,7 @@ func newStratumClient(ctx context.Context, url, addr string, logger logr.Logger)
 		stratum.WithErrorLogger(func(err error, s string) {
 			logger.Error(err, s)
 		}),
+		stratum.WithAgentName(fmt.Sprintf("dero-stratum-miner %s", version.Version)),
 	}
 	if useTLS {
 		opts = append(opts, stratum.WithUseTLS())

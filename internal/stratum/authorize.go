@@ -4,7 +4,7 @@ func (c *Client) authorize() error {
 	args := map[string]any{
 		"login": c.username,
 		"pass":  c.password,
-		"agent": "go-stratum",
+		"agent": c.agentName,
 	}
 
 	if _, err := c.call("login", args); err != nil {

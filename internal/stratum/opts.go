@@ -84,3 +84,9 @@ func WithReconnectIntervalFactor(factor float64) Opts {
 		c.reconnectIntervalFactor = factor
 	}
 }
+
+func WithAgentName(agentName string) Opts {
+	return func(c *Client) {
+		c.agentName = agentName
+	}
+}
