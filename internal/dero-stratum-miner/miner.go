@@ -35,11 +35,15 @@ type Client struct {
 	console *readline.Instance
 	logger  logr.Logger
 
-	mu         sync.RWMutex
-	job        *stratum.Job
-	jobCounter int64
-	iterations int
-	hashrate   uint64
+	mu           sync.RWMutex
+	job          *stratum.Job
+	jobCounter   int64
+	iterations   int
+	hashrate     uint64
+	mining       bool
+	miningString string
+	diffString   string
+	heightString string
 
 	shareCounter    uint64
 	rejectedCounter uint64
@@ -59,7 +63,10 @@ func New(ctx context.Context, cancel context.CancelFunc, config *config.Miner, s
 }
 
 func (c *Client) Close() error {
-	return c.console.Close()
+	if c.console != nil {
+		return c.console.Close()
+	}
+	return nil
 }
 
 func (c *Client) Start() error {
@@ -71,7 +78,11 @@ func (c *Client) Start() error {
 		c.config.Threads = 255
 	}
 
-	go c.refreshConsole()
+	go c.gatherStats()
+	if c.config.NonInteractive {
+		go c.noniSummary()
+	}
+
 	go c.getwork()
 
 	for i := 0; i < c.config.Threads; i++ {
@@ -80,8 +91,9 @@ func (c *Client) Start() error {
 
 	go c.reportHashrate()
 
-	// this method will block until the context is canceled
-	c.startConsole()
+	if !c.config.NonInteractive {
+		c.startConsole()
+	}
 	return nil
 }
 

@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/signal"
@@ -11,6 +12,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/chzyer/readline"
 	"github.com/deroproject/derohe/rpc"
 	"github.com/go-logr/logr"
 	"github.com/muesli/coral"
@@ -42,6 +44,7 @@ func init() {
 	rootCmd.Flags().BoolVarP(&cfg.Miner.Testnet, "testnet", "t", false, "use testnet")
 	rootCmd.Flags().StringVarP(&cfg.Miner.PoolURL, "daemon-rpc-address", "r", "pool.whalesburg.com:4300", "stratum pool url")
 	rootCmd.Flags().IntVarP(&cfg.Miner.Threads, "mining-threads", "m", runtime.GOMAXPROCS(0), "number of threads to use")
+	rootCmd.Flags().BoolVar(&cfg.Miner.NonInteractive, "non-interactive", false, "non-interactive mode")
 
 	rootCmd.Flags().BoolVar(&cfg.Logger.Debug, "debug", false, "enable debug mode")
 	rootCmd.Flags().Int8Var(&cfg.Logger.CLogLevel, "console-log-level", 0, "console log level")
@@ -94,9 +97,17 @@ func rootHandler(cmd *coral.Command, args []string) error {
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
-	cli, err := console.New()
-	if err != nil {
-		log.Fatalln("failed to create console:", err)
+	var (
+		cli *readline.Instance
+		out io.Writer = os.Stdout
+	)
+	if !cfg.Miner.NonInteractive {
+		var err error
+		cli, err = console.New()
+		if err != nil {
+			log.Fatalln("failed to create console:", err)
+		}
+		out = cli.Stdout()
 	}
 
 	exename, err := os.Executable()
@@ -107,7 +118,7 @@ func rootHandler(cmd *coral.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("Error while opening log file err: %s filename %s", err, exename+".log")
 	}
-	logger := logging.New(cli.Stdout(), f, cfg.Logger)
+	logger := logging.New(out, f, cfg.Logger)
 
 	ctx, cancel := context.WithCancel(cmd.Context())
 	stc := newStratumClient(ctx, cfg.Miner.PoolURL, cfg.Miner.Wallet, logger)
