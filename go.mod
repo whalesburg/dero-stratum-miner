@@ -3,7 +3,7 @@ module github.com/whalesburg/dero-stratum-miner
 go 1.18
 
 require (
-	github.com/chzyer/readline v1.5.0
+	github.com/chzyer/readline v1.5.1
 	github.com/deroproject/derohe v0.0.0-20220610090545-ec5da1c381a9
 	github.com/go-logr/logr v1.2.3
 	github.com/go-logr/zapr v1.2.3
