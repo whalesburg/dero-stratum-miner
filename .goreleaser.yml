@@ -110,6 +110,32 @@ nfpms:
       - deb
       - rpm
 
+aurs:
+  -
+    name: dero-stratum-miner-bin
+    homepage: whalesburg.com
+    description: Dero Stratum Miner
+    maintainers:
+      - jon4hz <me@jon4hz.io>
+    license: custom
+    private_key: '{{ .Env.AUR_KEY }}'
+    git_url: 'ssh://aur@aur.archlinux.org/dero-stratum-miner-bin.git'
+    package: |-
+      # bin
+      install -Dm755 "./dero-stratum-miner" "${pkgdir}/usr/bin/dero-stratum-miner"
+      # license
+      install -Dm644 "./LICENSE" "${pkgdir}/usr/share/licenses/dero-stratum-miner/LICENSE"
+      # completions
+      mkdir -p "${pkgdir}/usr/share/bash-completion/completions/"
+      mkdir -p "${pkgdir}/usr/share/zsh/site-functions/"
+      mkdir -p "${pkgdir}/usr/share/fish/vendor_completions.d/"
+      install -Dm644 "./completions/dero-stratum-miner.bash" "${pkgdir}/usr/share/bash-completion/completions/dero-stratum-miner"
+      install -Dm644 "./completions/dero-stratum-miner.zsh" "${pkgdir}/usr/share/zsh/site-functions/_dero-stratum-miner"
+      install -Dm644 "./completions/dero-stratum-miner.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/dero-stratum-miner.fish"
+      # man pages
+      install -Dm644 "./manpages/dero-stratum-miner.1.gz" "${pkgdir}/usr/share/man/man1/dero-stratum-miner.1.gz"
+
+
 source:
   enabled: true
 
