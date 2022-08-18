@@ -96,7 +96,7 @@ To use `dero-stratum-miner` on hiveOS, you have to create a [custom miner](https
 Option                            | Value
 ----------------------------------|------------------------------------------------------------------------------------------------------------------
 Miner name                        | dero-stratum-miner
-Installation URL                  | https://github.com/whalesburg/dero-stratum-miner/releases/download/v1.0.1/dero-stratum-miner-1.0.1-hiveOS.tar.gz
+Installation URL                  | https://github.com/whalesburg/dero-stratum-miner/releases/download/v1.0.1/dero-stratum-miner-1.0.1.hiveOS.tar.gz
 Hash algorithm                    | astrobwt
 Wallet and worker template        | %WAL%.%WORKER_NAME%
 Pool URL                          | pool.whalesburg.com:4300
