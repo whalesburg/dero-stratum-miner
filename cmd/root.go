@@ -30,9 +30,10 @@ import (
 var cfg = config.NewEmpty()
 
 var rootCmd = &coral.Command{
-	Use:   "dero-stratum-miner",
-	Short: "Dero Stratum Miner",
-	RunE:  rootHandler,
+	Use:     "dero-stratum-miner",
+	Short:   "Dero Stratum Miner",
+	Version: version.Version,
+	RunE:    rootHandler,
 }
 
 func init() {
