@@ -17,7 +17,6 @@ type Miner struct {
 type Logger struct {
 	Debug     bool
 	CLogLevel int8
-	FLogLevel int8
 }
 
 type API struct {

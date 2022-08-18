@@ -49,7 +49,6 @@ func init() {
 
 	rootCmd.Flags().BoolVar(&cfg.Logger.Debug, "debug", false, "enable debug mode")
 	rootCmd.Flags().Int8Var(&cfg.Logger.CLogLevel, "console-log-level", 0, "console log level")
-	rootCmd.Flags().Int8Var(&cfg.Logger.FLogLevel, "file-log-level", 0, "file log level")
 
 	rootCmd.Flags().StringVar(&cfg.API.Listen, "api-listen", ":8080", "address to listen for API requests")
 	rootCmd.Flags().BoolVar(&cfg.API.Enabled, "api-enabled", false, "enable the API server")

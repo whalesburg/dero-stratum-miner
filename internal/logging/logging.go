@@ -14,7 +14,6 @@ func New(console, logfile io.Writer, cfg *config.Logger) logr.Logger {
 	var logLevelConsole zap.AtomicLevel
 	if cfg.Debug { // setup debug mode if requested
 		cfg.CLogLevel = 1
-		cfg.FLogLevel = 1
 	}
 
 	if cfg.CLogLevel < 0 {
@@ -25,28 +24,16 @@ func New(console, logfile io.Writer, cfg *config.Logger) logr.Logger {
 	}
 	logLevelConsole = zap.NewAtomicLevelAt(zapcore.Level(0 - cfg.CLogLevel))
 
-	var logLevelFile zap.AtomicLevel
-	if cfg.FLogLevel < 0 {
-		cfg.FLogLevel = 0
-	}
-	if cfg.FLogLevel > 127 {
-		cfg.FLogLevel = 127
-	}
-	logLevelFile = zap.NewAtomicLevelAt(zapcore.Level(0 - cfg.FLogLevel))
-
-	zf := zap.NewDevelopmentEncoderConfig()
 	zc := zap.NewDevelopmentEncoderConfig()
 	zc.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	zc.EncodeTime = zapcore.TimeEncoderOfLayout("02/01 15:04:05")
 
-	fileEncoder := zapcore.NewJSONEncoder(zf)
 	consoleEncoder := zapcore.NewConsoleEncoder(zc)
 
 	coreConsole := zapcore.NewCore(consoleEncoder, zapcore.AddSync(console), logLevelConsole)
 	removecore := &removeCallerCore{coreConsole}
 	core := zapcore.NewTee(
 		removecore,
-		zapcore.NewCore(fileEncoder, zapcore.AddSync(logfile), logLevelFile),
 	)
 
 	zcore := zap.New(core, zap.AddCaller()) // add caller info to every record which is then trimmed from console
