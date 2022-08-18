@@ -112,6 +112,8 @@ nfpms:
 
 aurs:
   -
+    ids:
+      - default
     name: dero-stratum-miner-bin
     homepage: whalesburg.com
     description: Dero Stratum Miner
