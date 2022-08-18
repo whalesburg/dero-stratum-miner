@@ -110,15 +110,7 @@ func rootHandler(cmd *coral.Command, args []string) error {
 		out = cli.Stdout()
 	}
 
-	exename, err := os.Executable()
-	if err != nil {
-		return err
-	}
-	f, err := os.Create(exename + ".log")
-	if err != nil {
-		return fmt.Errorf("Error while opening log file err: %s filename %s", err, exename+".log")
-	}
-	logger := logging.New(out, f, cfg.Logger)
+	logger := logging.New(out, cfg.Logger)
 
 	ctx, cancel := context.WithCancel(cmd.Context())
 	stc := newStratumClient(ctx, cfg.Miner.PoolURL, cfg.Miner.Wallet, logger)

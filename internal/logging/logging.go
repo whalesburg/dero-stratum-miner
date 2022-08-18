@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-func New(console, logfile io.Writer, cfg *config.Logger) logr.Logger {
+func New(console io.Writer, cfg *config.Logger) logr.Logger {
 	var logLevelConsole zap.AtomicLevel
 	if cfg.Debug { // setup debug mode if requested
 		cfg.CLogLevel = 1
