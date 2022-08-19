@@ -64,7 +64,9 @@ type Client struct {
 	msgHandlerCtx    context.Context
 	msgHandlerCancel context.CancelFunc
 
-	lastMsg time.Time
+	lastMsg      time.Time
+	reconnCtx    context.Context
+	reconnCancel context.CancelFunc
 }
 
 type logFnOptions struct {
@@ -193,23 +195,35 @@ func (c *Client) dial() error {
 
 func (c *Client) reconnect() {
 	if !c.setStateIfNot(connectingState, connectingState|connectedState|closedForeverState) {
-		c.LogFn.Error(nil, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAS")
 		return
 	}
-	c.LogFn.Error(nil, "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
 
 	b := c.makeBackoff()
 	rand.Seed(time.Now().UTC().UnixNano())
 
-	for {
-		err := c.dial()
-		if err == nil {
-			return
-		}
+	if c.reconnCancel != nil {
+		c.reconnCancel()
+	}
+	reconnCtx, cancel := context.WithCancel(c.ctx)
+	c.reconnCancel = cancel
 
-		waitDuration := b.Duration()
-		c.LogFn.Error(err, fmt.Sprintf("dial error, will try again in %f seconds", waitDuration.Seconds()))
-		time.Sleep(waitDuration)
+	for {
+		select {
+		case <-c.ctx.Done():
+			return
+		case <-reconnCtx.Done():
+			c.LogFn.Error(nil, "reconnection cancelled")
+			return
+		default:
+			err := c.dial()
+			if err == nil {
+				return
+			}
+
+			waitDuration := b.Duration()
+			c.LogFn.Error(err, fmt.Sprintf("dial error, will try again in %f seconds", waitDuration.Seconds()))
+			time.Sleep(waitDuration)
+		}
 	}
 }
 
@@ -384,9 +398,6 @@ func (c *Client) readLine() ([]byte, error) {
 	line, err := c.reader.ReadBytes('\n')
 	if err != nil {
 		c.CloseAndReconnect()
-		c.CloseAndReconnect()
-		c.CloseAndReconnect()
-		c.CloseAndReconnect()
 		return nil, err
 	}
 	c.lastMsg = time.Now()
@@ -409,12 +420,12 @@ func (c *Client) checkRejected() {
 }
 
 func (c *Client) checkLastMsg() {
-	ticker := time.NewTicker(time.Second * 10)
+	ticker := time.NewTicker(time.Second * 30)
 	for {
 		select {
 		case <-ticker.C:
-			if time.Since(c.lastMsg) > time.Second*30 {
-				c.LogFn.Error(errors.New("no messages for 30 seconds"), "dead connection?, reconnecting...")
+			if time.Since(c.lastMsg) > time.Minute*3 {
+				c.LogFn.Error(errors.New("no messages for 3 minutes"), "dead connection?, reconnecting...")
 				c.CloseAndReconnect()
 			}
 		case <-c.ctx.Done():
