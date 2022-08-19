@@ -52,6 +52,7 @@ type Client struct {
 
 	submittedShares int
 	acceptedShares  int
+	rejectedInARow  int
 
 	submittedJobIds    map[int]struct{}
 	submittedJobsIdsMu sync.Mutex
@@ -62,6 +63,8 @@ type Client struct {
 
 	msgHandlerCtx    context.Context
 	msgHandlerCancel context.CancelFunc
+
+	lastMsg time.Time
 }
 
 type logFnOptions struct {
@@ -111,11 +114,14 @@ func (c *Client) Close(forever bool) {
 	if c.state&(closedState|closedForeverState) > 0 {
 		return
 	}
-	if err := c.conn.Close(); err != nil {
-		c.LogFn.Error(err, "connection closing error")
+	if c.conn != nil {
+		if err := c.conn.Close(); err != nil {
+			c.LogFn.Error(err, "connection closing error")
+		}
 	}
 	if forever {
 		c.state = closedForeverState
+		c.cancel()
 	} else {
 		c.state = closedState
 	}
@@ -146,6 +152,7 @@ func (c *Client) Dial() error {
 	if err := c.dial(); err != nil {
 		return err
 	}
+	go c.checkLastMsg()
 	return nil
 }
 
@@ -153,13 +160,17 @@ func (c *Client) dial() error {
 	var err error
 	d := net.Dialer{KeepAlive: c.keepaliveTimeout}
 	c.mu.Lock()
+
+	ctx, cancel := context.WithDeadline(c.ctx, time.Now().Add(c.writeTimeout))
+	defer cancel()
+
 	if c.useTLS {
 		td := tls.Dialer{NetDialer: &d, Config: &tls.Config{
 			MinVersion: tls.VersionTLS13,
 		}}
-		c.conn, err = td.DialContext(c.ctx, "tcp", c.url)
+		c.conn, err = td.DialContext(ctx, "tcp", c.url)
 	} else {
-		c.conn, err = d.DialContext(c.ctx, "tcp", c.url)
+		c.conn, err = d.DialContext(ctx, "tcp", c.url)
 	}
 	if err == nil {
 		c.state = connectedState
@@ -182,8 +193,10 @@ func (c *Client) dial() error {
 
 func (c *Client) reconnect() {
 	if !c.setStateIfNot(connectingState, connectingState|connectedState|closedForeverState) {
+		c.LogFn.Error(nil, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAS")
 		return
 	}
+	c.LogFn.Error(nil, "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
 
 	b := c.makeBackoff()
 	rand.Seed(time.Now().UTC().UnixNano())
@@ -275,6 +288,7 @@ func (c *Client) handleMessages() {
 				c.LogFn.Error(err, "failed to read line")
 				break
 			}
+			c.LogFn.Debug(fmt.Sprintf("got message: %s", string(line)))
 
 			// MAYBE: debug logger
 			var msg map[string]interface{}
@@ -308,11 +322,13 @@ func (c *Client) handleMessages() {
 						delete(c.submittedJobIds, id)
 						c.acceptedShares++
 						c.submittedShares++
+						c.rejectedInARow = 0
 						c.LogFn.Info("accepted share")
 					} else {
 						delete(c.submittedJobIds, id)
 						c.submittedShares++
 						c.LogFn.Info("rejected share")
+						c.checkRejected()
 					}
 				} else {
 					statusIntf, ok := response.Result.(map[string]any)
@@ -345,6 +361,7 @@ func (c *Client) handleMessages() {
 					}
 				default:
 					// MAYBE: debug logger
+					c.LogFn.Debug("unknown notification")
 				}
 			}
 		}
@@ -367,8 +384,12 @@ func (c *Client) readLine() ([]byte, error) {
 	line, err := c.reader.ReadBytes('\n')
 	if err != nil {
 		c.CloseAndReconnect()
+		c.CloseAndReconnect()
+		c.CloseAndReconnect()
+		c.CloseAndReconnect()
 		return nil, err
 	}
+	c.lastMsg = time.Now()
 	return line, nil
 }
 
@@ -378,4 +399,26 @@ func parseResponse(b []byte) (*Response, error) {
 		return nil, err
 	}
 	return &response, nil
+}
+
+func (c *Client) checkRejected() {
+	if c.rejectedInARow >= 10 {
+		c.LogFn.Error(errors.New("too many rejects"), "more then 10 rejects in a row, reconnecting...")
+		c.CloseAndReconnect()
+	}
+}
+
+func (c *Client) checkLastMsg() {
+	ticker := time.NewTicker(time.Second * 10)
+	for {
+		select {
+		case <-ticker.C:
+			if time.Since(c.lastMsg) > time.Second*30 {
+				c.LogFn.Error(errors.New("no messages for 30 seconds"), "dead connection?, reconnecting...")
+				c.CloseAndReconnect()
+			}
+		case <-c.ctx.Done():
+			return
+		}
+	}
 }

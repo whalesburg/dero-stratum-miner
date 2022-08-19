@@ -165,8 +165,8 @@ func newStratumClient(ctx context.Context, url, addr string, logger logr.Logger)
 	opts := []stratum.Opts{
 		stratum.WithUsername(addr),
 		stratum.WithContext(ctx),
-		stratum.WithReadTimeout(time.Second * 10),
-		stratum.WithWriteTimeout(10 * time.Second),
+		stratum.WithReadTimeout(time.Second * 5),
+		stratum.WithWriteTimeout(5 * time.Second),
 		stratum.WithDebugLogger(func(s string) {
 			logger.V(1).Info(s)
 		}),
