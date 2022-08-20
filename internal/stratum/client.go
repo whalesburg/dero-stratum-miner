@@ -212,7 +212,7 @@ func (c *Client) reconnect() {
 		case <-c.ctx.Done():
 			return
 		case <-reconnCtx.Done():
-			c.LogFn.Error(nil, "reconnection cancelled")
+			c.LogFn.Debug("reconnect cancelled")
 			return
 		default:
 			err := c.dial()
