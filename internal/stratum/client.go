@@ -65,7 +65,6 @@ type Client struct {
 	msgHandlerCancel context.CancelFunc
 
 	lastMsg      time.Time
-	reconnCtx    context.Context
 	reconnCancel context.CancelFunc
 }
 
