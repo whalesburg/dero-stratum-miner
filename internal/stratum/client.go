@@ -150,19 +150,19 @@ func (c *Client) Dial() error {
 		return nil
 	}
 
-	if err := c.dial(); err != nil {
+	if err := c.dial(c.ctx); err != nil {
 		return err
 	}
 	go c.checkLastMsg()
 	return nil
 }
 
-func (c *Client) dial() error {
+func (c *Client) dial(ctx context.Context) error {
 	var err error
 	d := net.Dialer{KeepAlive: c.keepaliveTimeout}
 	c.mu.Lock()
 
-	ctx, cancel := context.WithDeadline(c.ctx, time.Now().Add(c.writeTimeout))
+	ctx, cancel := context.WithDeadline(ctx, time.Now().Add(c.writeTimeout))
 	defer cancel()
 
 	if c.useTLS {
@@ -214,7 +214,7 @@ func (c *Client) reconnect() {
 			c.LogFn.Debug("reconnect cancelled")
 			return
 		default:
-			err := c.dial()
+			err := c.dial(reconnCtx)
 			if err == nil {
 				return
 			}
