@@ -111,10 +111,11 @@ To simply start the miner and get going, you can use the following command:
 $ ./dero-stratum-miner -w $YOUR_WALLET
 ```
 
-### Disable TLS
-By default the dero-stratum-miner tries to connect over a tls encrypted port. This can be disabled using the following command:
+### Enable TLS
+By default the dero-stratum-miner has TLS disabled. Enabling TLS can improve your privacy but it will also generate a minimal network and CPU overhead.
+To do that, you can add the `stratum+tls://` prefix to the pool URL.
 ```
-$ ./dero-stratum-miner -w $YOUR_WALLET -r stratum://pool.whalesburg.com:4300
+$ ./dero-stratum-miner -w $YOUR_WALLET -r stratum+tls://pool.whalesburg.com:4300
 ```
 
 ### Enabled the api
