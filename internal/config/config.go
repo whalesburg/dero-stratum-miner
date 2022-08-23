@@ -12,6 +12,7 @@ type Miner struct {
 	PoolURL        string
 	Threads        int
 	NonInteractive bool
+	DNS            string
 }
 
 type Logger struct {

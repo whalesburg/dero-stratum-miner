@@ -22,6 +22,7 @@ import (
 	"github.com/whalesburg/dero-stratum-miner/internal/config"
 	"github.com/whalesburg/dero-stratum-miner/internal/console"
 	miner "github.com/whalesburg/dero-stratum-miner/internal/dero-stratum-miner"
+	"github.com/whalesburg/dero-stratum-miner/internal/dns"
 	"github.com/whalesburg/dero-stratum-miner/internal/logging"
 	"github.com/whalesburg/dero-stratum-miner/internal/stratum"
 	"github.com/whalesburg/dero-stratum-miner/internal/version"
@@ -46,6 +47,7 @@ func init() {
 	rootCmd.Flags().StringVarP(&cfg.Miner.PoolURL, "daemon-rpc-address", "r", "pool.whalesburg.com:4300", "stratum pool url")
 	rootCmd.Flags().IntVarP(&cfg.Miner.Threads, "mining-threads", "m", runtime.GOMAXPROCS(0), "number of threads to use")
 	rootCmd.Flags().BoolVar(&cfg.Miner.NonInteractive, "non-interactive", false, "non-interactive mode")
+	rootCmd.Flags().StringVar(&cfg.Miner.DNS, "dns-server", "1.1.1.1", "DNS server to use (only effective on linux arm)")
 
 	rootCmd.Flags().BoolVar(&cfg.Logger.Debug, "debug", false, "enable debug mode")
 	rootCmd.Flags().Int8Var(&cfg.Logger.CLogLevel, "console-log-level", 0, "console log level")
@@ -111,6 +113,8 @@ func rootHandler(cmd *coral.Command, args []string) error {
 	}
 
 	logger := logging.New(out, cfg.Logger)
+
+	dns.BootstrapDNS(cfg.Miner.DNS)
 
 	ctx, cancel := context.WithCancel(cmd.Context())
 	stc := newStratumClient(ctx, cfg.Miner.PoolURL, cfg.Miner.Wallet, logger)
