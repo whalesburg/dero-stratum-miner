@@ -66,7 +66,7 @@ func validateConfig(cfg *config.Config) error {
 		return err
 	}
 	if cfg.Miner.Threads > runtime.GOMAXPROCS(0) {
-		return fmt.Errorf("Mining threads is more than available CPUs. This is NOT optimal. Threads count: %d, max possible: %d", cfg.Miner.Threads, runtime.GOMAXPROCS(0))
+		log.Printf("Mining threads is more than available CPUs. This is NOT optimal. Threads count: %d, max possible: %d", cfg.Miner.Threads, runtime.GOMAXPROCS(0))
 	}
 
 	return nil
@@ -92,6 +92,7 @@ func validateAddress(testnet bool, a string) error {
 }
 
 func rootHandler(cmd *coral.Command, args []string) error {
+	bootDelay()
 	if err := validateConfig(cfg); err != nil {
 		log.Fatalln(err)
 	}
