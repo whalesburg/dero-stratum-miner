@@ -40,6 +40,7 @@ type Client struct {
 	reconnectIntervalMax    time.Duration
 	reconnectIntervalFactor float64
 	useTLS                  bool
+	ignoreTLSValidation     bool
 	parentCtx               context.Context
 	ctx                     context.Context
 	cancel                  context.CancelFunc
@@ -167,7 +168,8 @@ func (c *Client) dial(ctx context.Context) error {
 
 	if c.useTLS {
 		td := tls.Dialer{NetDialer: &d, Config: &tls.Config{
-			MinVersion: tls.VersionTLS13,
+			MinVersion:         tls.VersionTLS13,
+			InsecureSkipVerify: c.ignoreTLSValidation, //nolint:gosec
 		}}
 		c.conn, err = td.DialContext(ctx, "tcp", c.url)
 	} else {

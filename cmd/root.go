@@ -48,6 +48,7 @@ func init() {
 	rootCmd.Flags().IntVarP(&cfg.Miner.Threads, "mining-threads", "m", runtime.GOMAXPROCS(0), "number of threads to use")
 	rootCmd.Flags().BoolVar(&cfg.Miner.NonInteractive, "non-interactive", false, "non-interactive mode")
 	rootCmd.Flags().StringVar(&cfg.Miner.DNS, "dns-server", "1.1.1.1", "DNS server to use (only effective on linux arm)")
+	rootCmd.Flags().BoolVar(&cfg.Miner.IgnoreTLSValidation, "ignore-tls-validation", false, "ignore TLS validation")
 
 	rootCmd.Flags().BoolVar(&cfg.Logger.Debug, "debug", false, "enable debug mode")
 	rootCmd.Flags().Int8Var(&cfg.Logger.CLogLevel, "console-log-level", 0, "console log level")
@@ -181,6 +182,7 @@ func newStratumClient(ctx context.Context, url, addr string, logger logr.Logger)
 			logger.Error(err, s)
 		}),
 		stratum.WithAgentName(fmt.Sprintf("dero-stratum-miner %s", version.Version)),
+		stratum.WithIgnoreTLSValidation(cfg.Miner.IgnoreTLSValidation),
 	}
 	if useTLS {
 		opts = append(opts, stratum.WithUseTLS())

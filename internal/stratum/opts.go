@@ -49,6 +49,12 @@ func WithUseTLS() Opts {
 	}
 }
 
+func WithIgnoreTLSValidation(ignoreTLSValidation bool) Opts {
+	return func(c *Client) {
+		c.ignoreTLSValidation = ignoreTLSValidation
+	}
+}
+
 func WithDebugLogger(logger func(string)) Opts {
 	return func(c *Client) {
 		c.LogFn.Debug = logger

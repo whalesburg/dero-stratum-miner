@@ -7,12 +7,13 @@ type Config struct {
 }
 
 type Miner struct {
-	Wallet         string
-	Testnet        bool
-	PoolURL        string
-	Threads        int
-	NonInteractive bool
-	DNS            string
+	Wallet              string
+	Testnet             bool
+	PoolURL             string
+	Threads             int
+	NonInteractive      bool
+	DNS                 string
+	IgnoreTLSValidation bool
 }
 
 type Logger struct {
