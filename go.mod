@@ -12,7 +12,7 @@ require (
 	github.com/muesli/coral v1.0.0
 	github.com/muesli/mango-coral v1.0.1
 	github.com/muesli/roff v0.1.0
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.1
 	github.com/teivah/broadcast v0.1.0
 	go.neonxp.dev/jsonrpc2 v1.2.0
 	go.uber.org/zap v1.23.0
