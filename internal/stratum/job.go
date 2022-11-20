@@ -56,6 +56,9 @@ func extractJob(data map[string]any) (*Job, error) {
 		return nil, errors.New("failed to decode target")
 	}
 	var a = binary.LittleEndian.Uint64(raw)
+	if a == 0 {
+		return nil, errors.New("invalid target")
+	}
 	job.Difficulty = 0xFFFFFFFFFFFFFFFF / a
 
 	return &job, nil
