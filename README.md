@@ -140,7 +140,7 @@ $ ./dero-stratum-miner -w $YOUR_WALLET --api-enabled
 ### Full Help
 
 ```
-$ ./dero-stratum-miner help
+$ ./dero-stratum-miner --help
 Dero Stratum Miner
 
 Usage:
@@ -155,13 +155,17 @@ Available Commands:
 Flags:
       --api-enabled                 enable the API server
       --api-listen string           address to listen for API requests (default ":8080")
+      --api-transport string        transport to use for API requests (default "tcp")
       --console-log-level int8      console log level
   -r, --daemon-rpc-address string   stratum pool url (default "pool.whalesburg.com:4300")
       --debug                       enable debug mode
-      --file-log-level int8         file log level
+      --dns-server string           DNS server to use (only effective on linux arm) (default "1.1.1.1")
   -h, --help                        help for dero-stratum-miner
+      --ignore-tls-validation       ignore TLS validation
   -m, --mining-threads int          number of threads to use (default 32)
+      --non-interactive             non-interactive mode
   -t, --testnet                     use testnet
+  -v, --version                     version for dero-stratum-miner
   -w, --wallet-address string       wallet of the miner. Rewards will be sent to this address
 
 Use "dero-stratum-miner [command] --help" for more information about a command.
