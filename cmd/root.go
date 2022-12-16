@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"log"
@@ -21,11 +20,11 @@ import (
 	"github.com/whalesburg/dero-stratum-miner/internal/api"
 	"github.com/whalesburg/dero-stratum-miner/internal/config"
 	"github.com/whalesburg/dero-stratum-miner/internal/console"
-	miner "github.com/whalesburg/dero-stratum-miner/internal/dero-stratum-miner"
 	"github.com/whalesburg/dero-stratum-miner/internal/dns"
 	"github.com/whalesburg/dero-stratum-miner/internal/logging"
-	"github.com/whalesburg/dero-stratum-miner/internal/stratum"
 	"github.com/whalesburg/dero-stratum-miner/internal/version"
+	"github.com/whalesburg/dero-stratum-miner/miner"
+	"github.com/whalesburg/dero-stratum-miner/stratum"
 )
 
 var cfg = config.NewEmpty()
@@ -117,23 +116,22 @@ func rootHandler(cmd *coral.Command, args []string) error {
 
 	dns.BootstrapDNS(cfg.Miner.DNS)
 
-	ctx, cancel := context.WithCancel(cmd.Context())
-	stc := newStratumClient(ctx, cfg.Miner.PoolURL, cfg.Miner.Wallet, logger)
+	stc := newStratumClient(cfg.Miner.PoolURL, cfg.Miner.Wallet, logger)
 
-	m, err := miner.New(ctx, cancel, cfg.Miner, stc, cli, logger)
+	m, err := miner.New(cfg.Miner, stc, cli, logger)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	defer m.Close()
 
 	go func() {
-		if err := m.Start(); err != nil {
+		if err := m.Start(cmd.Context()); err != nil {
 			log.Fatalln(err)
 		}
 	}()
 
 	if cfg.API.Enabled {
-		api, err := api.New(ctx, m, cfg.API, logger)
+		api, err := api.New(cmd.Context(), m, cfg.API, logger)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -147,14 +145,13 @@ func rootHandler(cmd *coral.Command, args []string) error {
 
 	select {
 	case <-done:
-	case <-ctx.Done():
+	case <-cmd.Context().Done():
 	}
-	cancel()
 
 	return nil
 }
 
-func newStratumClient(ctx context.Context, url, addr string, logger logr.Logger) *stratum.Client {
+func newStratumClient(url, addr string, logger logr.Logger) *stratum.Client {
 	logger = logger.WithName("stratum")
 	var useTLS bool
 	if strings.HasPrefix(url, "stratum+tls://") || strings.HasPrefix(url, "stratum+ssl://") {
@@ -167,9 +164,8 @@ func newStratumClient(ctx context.Context, url, addr string, logger logr.Logger)
 		url = strings.TrimPrefix(url, "tcp://")
 		url = strings.TrimPrefix(url, "stratum+tcp://")
 	}
-	opts := []stratum.Opts{
+	opts := []stratum.OptsFunc{
 		stratum.WithUsername(addr),
-		stratum.WithContext(ctx),
 		stratum.WithReadTimeout(time.Second * 5),
 		stratum.WithWriteTimeout(5 * time.Second),
 		stratum.WithDebugLogger(func(s string) {

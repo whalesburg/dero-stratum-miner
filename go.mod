@@ -2,12 +2,16 @@ module github.com/whalesburg/dero-stratum-miner
 
 go 1.18
 
+replace github.com/jon4hz/stratum-rpc => ../../stratum-rpc
+
 require (
+	github.com/cenkalti/rpc2 v0.0.0-20210604223624-c1acbc6ec984
 	github.com/chzyer/readline v1.5.1
 	github.com/deroproject/derohe v0.0.0-20220610090545-ec5da1c381a9
 	github.com/go-logr/logr v1.2.3
 	github.com/go-logr/zapr v1.2.3
 	github.com/jon4hz/hashconv v1.0.0
+	github.com/jon4hz/stratum-rpc v0.0.1
 	github.com/jpillora/backoff v1.0.0
 	github.com/muesli/coral v1.0.0
 	github.com/muesli/mango-coral v1.0.1
@@ -22,12 +26,14 @@ require (
 require (
 	github.com/blang/semver/v4 v4.0.0 // indirect
 	github.com/caarlos0/env/v6 v6.9.3 // indirect
+	github.com/cenkalti/hub v1.0.1 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dchest/siphash v1.2.3 // indirect
 	github.com/deroproject/graviton v0.0.0-20220130070622-2c248a53b2e1 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.4.0 // indirect
+	github.com/goccy/go-json v0.9.11 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.0.4 // indirect
 	github.com/minio/sha256-simd v1.0.0 // indirect

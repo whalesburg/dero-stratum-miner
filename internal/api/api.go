@@ -10,8 +10,8 @@ import (
 
 	"github.com/go-logr/logr"
 	"github.com/whalesburg/dero-stratum-miner/internal/config"
-	miner "github.com/whalesburg/dero-stratum-miner/internal/dero-stratum-miner"
 	"github.com/whalesburg/dero-stratum-miner/internal/version"
+	"github.com/whalesburg/dero-stratum-miner/miner"
 	"go.neonxp.dev/jsonrpc2/rpc"
 	"go.neonxp.dev/jsonrpc2/transport"
 )
