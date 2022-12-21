@@ -22,10 +22,10 @@ The latest release can always be found [here](https://github.com/whalesburg/dero
    `mkdir dero-stratum-miner && cd dero-stratum-miner`
 
 3. Download the latest release  
-   `curl -sLJO "https://github.com/whalesburg/dero-stratum-miner/releases/download/v1.0.4/dero-stratum-miner-v1.0.4-linux-amd64.tar.gz"`
+   `curl -sLJO "https://github.com/whalesburg/dero-stratum-miner/releases/download/v1.0.5/dero-stratum-miner-v1.0.5-linux-amd64.tar.gz"`
 
 4. Unpack the archive  
-   `tar xavf dero-stratum-miner-v1.0.4-linux-amd64.tar.gz`
+   `tar xavf dero-stratum-miner-v1.0.5-linux-amd64.tar.gz`
 
 5. Make the file executable  
    `chmod u+x dero-stratum-miner`
@@ -38,13 +38,13 @@ The miner can be started by using the command `./dero-stratum-miner`
 # -> download the latest release file first.
 
 # debian / ubuntu
-dpkg -i dero-stratum-miner-v1.0.4-linux-amd64.deb
+dpkg -i dero-stratum-miner-v1.0.5-linux-amd64.deb
 
 # rhel / fedora / suse
-rpm -i dero-stratum-miner-v1.0.4-linux-amd64.rpm
+rpm -i dero-stratum-miner-v1.0.5-linux-amd64.rpm
 
 # alpine
-apk add --allow-untrusted dero-stratum-miner-v1.0.4-linux-amd64.apk
+apk add --allow-untrusted dero-stratum-miner-v1.0.5-linux-amd64.apk
 ```
 
 #### Arch (btw)
@@ -83,10 +83,10 @@ The miner can be started by using the command `./dero-stratum-miner`
    `mkdir dero-stratum-miner && cd dero-stratum-miner`
 
 5. Download the latest release  
-   `curl -sLJO "https://github.com/whalesburg/dero-stratum-miner/releases/download/v1.0.4/dero-stratum-miner-v1.0.4-linux-arm64.tar.gz"`
+   `curl -sLJO "https://github.com/whalesburg/dero-stratum-miner/releases/download/v1.0.5/dero-stratum-miner-v1.0.5-linux-arm64.tar.gz"`
 
 6. Unpack the archive  
-   `tar xavf dero-stratum-miner-v1.0.4-linux-arm64.tar.gz`
+   `tar xavf dero-stratum-miner-v1.0.5-linux-arm64.tar.gz`
 
 7. Make the file executable  
    `chmod u+x dero-stratum-miner`
@@ -104,7 +104,7 @@ To use `dero-stratum-miner` on hiveOS, you have to create a [custom miner](https
 | Option                            | Value                                                                                                            |
 | --------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | Miner name                        | dero-stratum-miner                                                                                               |
-| Installation URL                  | https://github.com/whalesburg/dero-stratum-miner/releases/download/v1.0.4/dero-stratum-miner-1.0.4.hiveOS.tar.gz |
+| Installation URL                  | https://github.com/whalesburg/dero-stratum-miner/releases/download/v1.0.5/dero-stratum-miner-1.0.5.hiveOS.tar.gz |
 | Hash algorithm                    | astrobwt                                                                                                         |
 | Wallet and worker template        | %WAL%.%WORKER_NAME%                                                                                              |
 | Pool URL                          | pool.whalesburg.com:4300                                                                                         |
