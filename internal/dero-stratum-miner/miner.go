@@ -118,10 +118,10 @@ func (c *Client) getwork() {
 			continue
 		}
 
-		jobListener := c.stratum.NewJobListener(4)
+		jobListener := c.stratum.NewJobListener(0)
 		defer jobListener.Close()
 
-		respListener := c.stratum.NewResponseListener(2)
+		respListener := c.stratum.NewResponseListener(0)
 		go c.listenStratumResponses(respListener)
 
 		for {
