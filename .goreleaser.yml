@@ -109,6 +109,8 @@ nfpms:
       - apk
       - deb
       - rpm
+      - termux.deb
+      - archlinux
 
 aurs:
   -
