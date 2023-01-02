@@ -14,7 +14,7 @@ require (
 	github.com/muesli/roff v0.1.0
 	github.com/stretchr/testify v1.8.1
 	github.com/teivah/broadcast v0.1.0
-	go.neonxp.dev/jsonrpc2 v1.2.0
+	go.neonxp.dev/jsonrpc2 v1.3.0
 	go.uber.org/zap v1.24.0
 	golang.org/x/sys v0.0.0-20220615213510-4f61da869c0c
 )
@@ -28,6 +28,9 @@ require (
 	github.com/deroproject/graviton v0.0.0-20220130070622-2c248a53b2e1 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.4.0 // indirect
+	github.com/gobwas/httphead v0.1.0 // indirect
+	github.com/gobwas/pool v0.2.1 // indirect
+	github.com/gobwas/ws v1.1.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.0.4 // indirect
 	github.com/minio/sha256-simd v1.0.0 // indirect
@@ -43,7 +46,7 @@ require (
 	go.uber.org/multierr v1.6.0 // indirect
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
 	golang.org/x/net v0.0.0-20220615171555-694bf12d69de // indirect
-	golang.org/x/sync v0.0.0-20220513210516-0976fa681c29 // indirect
+	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
